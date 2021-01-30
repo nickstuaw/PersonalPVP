@@ -6,10 +6,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityCombustByEntityEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -22,6 +19,7 @@ import xyz.cosmicity.personalpvp.managers.PVPManager;
 import xyz.cosmicity.personalpvp.managers.TaskManager;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 public class Listeners implements Listener {
 
@@ -41,13 +39,17 @@ public class Listeners implements Listener {
         if(pl.prevent_combustion()) {
             pl.getServer().getPluginManager().registerEvents(new CombustionListener(), pl);
         }
-        if(pl.getConfig().getBoolean("actionbar.enable")) {
+        if(pl.getConfig().getBoolean("togglable-actionbar.enable")) {
             pl.getServer().getPluginManager().registerEvents(this, pl);
+
         }
     }
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(final PlayerJoinEvent e) {
-        TaskManager.addUuid(e.getPlayer().getUniqueId());
+        UUID uuid = e.getPlayer().getUniqueId();
+        TaskManager.addUuid(uuid);
+        if(PPVPPlugin.inst().actionbar_login_duration()<1 || TaskManager.ignoredNegative(uuid)) return;
+        TaskManager.sendJoinDuration(uuid, PPVPPlugin.inst());
     }
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(final PlayerQuitEvent e) {

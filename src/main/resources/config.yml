@@ -1,6 +1,6 @@
 # Minimessage support.
 # Color usage https://docs.adventure.kyori.net/minimessage.html#the-components
-version: 1.0 #Config version. This should be 1.0 to allow updates.
+version: 1.1 #Config version. This should be 1.1 to allow updates.
 auto-update-commands-yml: false
 prevent:
   # Reloads aren't effective for these 'prevent.' settings.
@@ -9,9 +9,10 @@ prevent:
   throwable-projectiles: true
   potions: true
   combustion-from-players: false # Enable if some custom plugins are used (e.g. if players shoot firecharges)
-actionbar:
+togglable-actionbar:
   enable: true
-  show-actionbar-on-first-join: true
+  show-actionbar-on-first-join: false
+  show-on-login-duration-seconds: 5.0 # Show the actionbar for x seconds on login if ^ is false?
   reset-actionbar-status-on-quit: false
   message: "<pvpprefix>PVP: <pvpstatus></gradient> <gray>-</gray> <gold><worldtime>"
   worldtime-in-world: "world"
