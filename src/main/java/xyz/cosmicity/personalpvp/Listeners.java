@@ -112,10 +112,10 @@ class ProjectileListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onHit(final ProjectileHitEvent e){
         Entity projectile = e.getEntity();
-        Player shooter = (Player) e.getEntity().getShooter();
         if(e.getHitEntity()==null ||
-                shooter == null ||
+                !(e.getEntity().getShooter() instanceof Player) ||
                 !(e.getHitEntity() instanceof Player)) return;
+        Player shooter = (Player) e.getEntity().getShooter();
         UUID shooterUuid = shooter.getUniqueId(), entityUuid = e.getHitEntity().getUniqueId();
         if(PVPManager.isEitherNegative(shooterUuid,entityUuid)) {
             e.setCancelled(true);
