@@ -29,8 +29,7 @@ import java.util.logging.Logger;
 
 public final class PPVPPlugin extends JavaPlugin {
 
-    public static final double VERSION = 1.0;
-    private static final double CONFIG_VERSION = 1.0;
+    public static final double VERSION = 1.1, CONFIG_VERSION = 1.1, COMMANDS_VERSION = 1.0;
 
     private YamlConfiguration commandsConfig;
 
@@ -39,7 +38,7 @@ public final class PPVPPlugin extends JavaPlugin {
     private double config_version, actionbar_login_duration, actionbar_attack_duration;
     private int pvp_cooldown;
 
-    private boolean use_reminder, reset_combination, reset_actionbar_on_quit, reset_pvp_on_quit, default_pvp_status, default_actionbar_status, prevent_fishing_rods, prevent_player_damage, prevent_projectiles, prevent_potions, prevent_combustion;
+    private boolean keep_xp_pvp, keep_inv_pvp, use_reminder, reset_combination, reset_actionbar_on_quit, reset_pvp_on_quit, default_pvp_status, default_actionbar_status, prevent_fishing_rods, prevent_player_damage, prevent_projectiles, prevent_potions, prevent_combustion;
 
     private String pvp_on_reminder, worldtime_in_world, pvp_cooldown_prompt, pvpcontrol_personal_lines, pvpcontrol_lines, actionbar_message, console_format, data_filename;
     private String[] actionbar_pvp_statuses, console_pvpstatuses, pvp_status_prefixes;
@@ -77,6 +76,8 @@ public final class PPVPPlugin extends JavaPlugin {
         setInstance(this);
 
         this.loadCommandsConfig();
+
+        this.checkConfigVersion();
 
         new CommandHandler();
 
@@ -116,10 +117,21 @@ public final class PPVPPlugin extends JavaPlugin {
     @Override
     public void reloadConfig() {
         super.reloadConfig();
-        this.loadCommandsConfig();
         this.loadVariables();
+        this.loadCommandsConfig();
+        this.checkConfigVersion();
         setInstance(this);
         checkActionbar();
+    }
+
+    public void checkConfigVersion() {
+        if(this.config_version < CONFIG_VERSION) {
+            this.log.info("A new version for config.yml is available.");
+        }
+        if(this.commandsConfig.getDouble("version") < COMMANDS_VERSION && this.getBool("auto-update-commands-yml")) {
+            this.saveResource("commands.yml",true);
+            this.log.info("NOTICE: commands.yml has been automatically updated.");
+        }
     }
 
     private void loadVariables() {
@@ -139,6 +151,8 @@ public final class PPVPPlugin extends JavaPlugin {
         this.pvp_cooldown = this.getConfig().getInt("command-settings.pvp-toggle.cooldown");
         this.pvp_cooldown_prompt = this.getStr("command-settings.pvp-toggle.cooldown-prompt");
         this.reset_pvp_on_quit = this.getBool("command-settings.pvp-toggle.reset-on-quit");
+        this.keep_inv_pvp = this.getBool("command-settings.pvp-toggle.keep-inventory-on-pvpdeath");
+        this.keep_xp_pvp = this.getBool("command-settings.pvp-toggle.keep-xp-on-pvpdeath");
         this.pvp_toggle_log_to_console = this.getBool("command-settings.pvp-toggle.log-to-console");
         this.console_format = this.getStr("command-settings.pvp-toggle.console-format");
         this.console_pvpstatuses = this.getStrLs("command-settings.pvp-toggle.pvpstatus").toArray(String[]::new);
@@ -150,9 +164,6 @@ public final class PPVPPlugin extends JavaPlugin {
         this.pvpcontrol_personal_lines = String.join("\n",this.getStrLs(("command-settings.pvp-control.personal-lines")));
         this.pvp_on_reminder = this.getStr("togglable-actionbar.reminder-to-enable-pvp");
         this.use_reminder = !this.pvp_on_reminder.isBlank();
-        if(this.config_version < CONFIG_VERSION) {
-            this.log.info("A new version for config.yml is available.");
-        }
     }
 
     private boolean getBool(final String path) {return this.getConfig().getBoolean(path);}
@@ -164,10 +175,6 @@ public final class PPVPPlugin extends JavaPlugin {
 
     public void loadCommandsConfig() {
         this.commandsConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "commands.yml"));
-        if(this.commandsConfig.getDouble("version") < VERSION && this.getBool("auto-update-commands-yml")) {
-            this.saveResource("commands.yml",true);
-            this.log.info("NOTICE: commands.yml has been automatically updated.");
-        }
     }
 
     public YamlConfiguration commands() { return this.commandsConfig;}
@@ -192,6 +199,8 @@ public final class PPVPPlugin extends JavaPlugin {
     public boolean use_reminder() {return this.use_reminder;}
     public String pvp_cooldown_prompt() {return this.pvp_cooldown_prompt;}
     public boolean default_pvp_status() {return this.default_pvp_status;}
+    public boolean keep_inv_pvp() {return this.keep_inv_pvp;}
+    public boolean keep_xp_pvp() {return this.keep_xp_pvp;}
     public boolean default_actionbar_status() {return this.default_actionbar_status;}
     public double actionbar_login_duration() {return this.actionbar_login_duration;}
     public double actionbar_attack_duration() {return this.actionbar_attack_duration;}

@@ -12,7 +12,7 @@ public class UpdateCommand extends Command {
     public void register(final CommandDetails details) {
         details.registerCommand((s, args) -> {
             final PPVPPlugin pl = PPVPPlugin.inst();
-            if(pl.config_version() >= 1.0){
+            if(pl.config_version() >= PPVPPlugin.CONFIG_VERSION){
                 CommandAPI.fail("No configuration update was found.");
                 return;
             }

@@ -32,6 +32,9 @@ command-settings:
     default-pvp-status: false
     # Reset PVP status on quit?
     reset-on-quit: false
+    # Keep inventory IF a player died to another player?
+    keep-inventory-on-pvpdeath: true
+    keep-xp-on-pvpdeath: true
     enabled: "<yellow>PVP <aqua>enabled</aqua>!"
     disabled: "<yellow>PVP <green>disabled</green>!"
     cooldown-prompt: "<red>You can do that again in <yellow><bold><seconds></bold></yellow>."
@@ -46,5 +49,5 @@ command-settings:
       - "[<click:run_command:/pvpcontrol toggleme><gradient:white:gray><bold>TOGGLE PVP</bold></gradient></click><green>]"
     lines:
       - "<green>[<click:suggest_command:/pvpcontrol resetglobal><hover:show_text:'<aqua>Reset offline players as well as online players.'><gradient:green:aqua><bold>FULL</gradient> <gradient:aqua:green>RESET</gradient></bold></hover></click><green>]"
-      - "[<click:suggest_command:/pvp enable @a><gradient:green:aqua><bold>ENABLE AL</gradient><gradient:aqua:green>L ONLINE</gradient></bold></click><green>]"
-      - "[<click:suggest_command:/pvp disable @a><gradient:green:aqua><bold>DISABLE A</gradient><gradient:aqua:green>LL ONLINE</gradient></bold></click><green>]"
+      - "[<click:suggest_command:/pvpother enable @a><gradient:green:aqua><bold>ENABLE AL</gradient><gradient:aqua:green>L ONLINE</gradient></bold></click><green>]"
+      - "[<click:suggest_command:/pvpother disable @a><gradient:green:aqua><bold>DISABLE A</gradient><gradient:aqua:green>LL ONLINE</gradient></bold></click><green>]"

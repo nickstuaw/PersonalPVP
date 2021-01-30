@@ -6,10 +6,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityCombustByEntityEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -23,7 +20,6 @@ import xyz.cosmicity.personalpvp.managers.TaskManager;
 
 import java.util.Arrays;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Listeners implements Listener {
@@ -47,6 +43,7 @@ public class Listeners implements Listener {
         if(pl.getConfig().getBoolean("togglable-actionbar.enable")) {
             pl.getServer().getPluginManager().registerEvents(this, pl);
         }
+        pl.getServer().getPluginManager().registerEvents(new DeathListener(), pl);
     }
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(final PlayerJoinEvent e) {
@@ -64,6 +61,15 @@ class QuitListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onQuit(final PlayerQuitEvent e) {
         PVPManager.reset(e.getPlayer().getUniqueId());
+    }
+}
+class DeathListener implements Listener {
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onDeath(final PlayerDeathEvent e) {
+        if(e.getEntity().getKiller() == null) return;
+        e.getDrops().clear();
+        e.setKeepInventory(PPVPPlugin.inst().keep_inv_pvp());
+        e.setKeepLevel(PPVPPlugin.inst().keep_xp_pvp());
     }
 }
 class DamageByEntityListener implements Listener {
