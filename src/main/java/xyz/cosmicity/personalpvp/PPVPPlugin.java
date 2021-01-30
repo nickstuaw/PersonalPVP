@@ -36,10 +36,10 @@ public final class PPVPPlugin extends JavaPlugin {
 
     private final Logger log = this.getLogger();
 
-    private double config_version, actionbar_login_duration;
+    private double config_version, actionbar_login_duration, actionbar_attack_duration;
     private int pvp_cooldown;
 
-    private boolean reset_combination, reset_actionbar_on_quit, reset_pvp_on_quit, default_pvp_status, default_actionbar_status, prevent_fishing_rods, prevent_player_damage, prevent_projectiles, prevent_potions, prevent_combustion;
+    private boolean use_reminder, reset_combination, reset_actionbar_on_quit, reset_pvp_on_quit, default_pvp_status, default_actionbar_status, prevent_fishing_rods, prevent_player_damage, prevent_projectiles, prevent_potions, prevent_combustion;
 
     private String pvp_on_reminder, worldtime_in_world, pvp_cooldown_prompt, pvpcontrol_personal_lines, pvpcontrol_lines, actionbar_message, console_format, data_filename;
     private String[] actionbar_pvp_statuses, console_pvpstatuses, pvp_status_prefixes;
@@ -131,6 +131,7 @@ public final class PPVPPlugin extends JavaPlugin {
         this.prevent_combustion = this.getBool("prevent.combustion-from-players");
         this.default_actionbar_status = this.getBool("togglable-actionbar.show-actionbar-on-first-join");
         this.actionbar_login_duration = this.getConfig().getDouble("togglable-actionbar.show-on-login-duration-seconds");
+        this.actionbar_attack_duration = this.getConfig().getDouble("togglable-actionbar.show-on-attack-duration-seconds");
         this.reset_actionbar_on_quit = this.getBool("togglable-actionbar.reset-actionbar-status-on-quit");
         this.actionbar_message = this.getStr("togglable-actionbar.message");
         this.actionbar_pvp_statuses = this.getStrLs("togglable-actionbar.pvpstatus").toArray(String[]::new);
@@ -148,6 +149,7 @@ public final class PPVPPlugin extends JavaPlugin {
         this.pvpcontrol_lines = String.join("\n",this.getStrLs(("command-settings.pvp-control.lines")));
         this.pvpcontrol_personal_lines = String.join("\n",this.getStrLs(("command-settings.pvp-control.personal-lines")));
         this.pvp_on_reminder = this.getStr("togglable-actionbar.reminder-to-enable-pvp");
+        this.use_reminder = !this.pvp_on_reminder.isBlank();
         if(this.config_version < CONFIG_VERSION) {
             this.log.info("A new version for config.yml is available.");
         }
@@ -187,10 +189,12 @@ public final class PPVPPlugin extends JavaPlugin {
     public String[] console_pvpstatuses() {return this.console_pvpstatuses;}
     public int pvp_cooldown() {return this.pvp_cooldown;}
     public String pvp_on_reminder() {return this.pvp_on_reminder;}
+    public boolean use_reminder() {return this.use_reminder;}
     public String pvp_cooldown_prompt() {return this.pvp_cooldown_prompt;}
     public boolean default_pvp_status() {return this.default_pvp_status;}
     public boolean default_actionbar_status() {return this.default_actionbar_status;}
     public double actionbar_login_duration() {return this.actionbar_login_duration;}
+    public double actionbar_attack_duration() {return this.actionbar_attack_duration;}
     public String worldtime_in_world() {return this.worldtime_in_world;}
 
     public String pvpcontrol_personal_lines() {return this.pvpcontrol_personal_lines;}

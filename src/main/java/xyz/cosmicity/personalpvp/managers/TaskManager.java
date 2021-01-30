@@ -44,8 +44,8 @@ public class TaskManager {
                 setMins(tmpMinutes);
                 setSuffix(sfx);
             }
-            if(onlineUuids.size()>0 && pl.default_actionbar_status()) {
-                onlineUuids.forEach(u -> sendUpdate(u, pl));
+            if(onlineUuids.size()>0) {
+                onlineUuids.stream().filter(TaskManager::ignoredNegative).forEach(u -> sendUpdate(u, pl));
             }
             }, 20L, 20L);//17L
     }
@@ -72,6 +72,15 @@ public class TaskManager {
                 "worldtime", (hours<10?"0":"")+hours+":"+(minutes<10?"0":"")+minutes+suffix),
                 false, true);
     }
+    public static void sendInstantUpdate(final UUID u, final PPVPPlugin pl, final String msg) {
+        Utils.send(Bukkit.getPlayer(u), Utils.parse(msg,
+                "pvpprefix",
+                pl.actionbar_pvp_prefixes()[PVPManager.pvpPositive(u) ? 0 : 1],
+                "pvpstatus",
+                pl.actionbar_pvp_statuses()[PVPManager.pvpPositive(u) ? 0 : 1],
+                "worldtime", (hours<10?"0":"")+hours+":"+(minutes<10?"0":"")+minutes+suffix),
+                false, true);
+    }
 
     public static boolean toggleHidden(final UUID uuid) {
         boolean c = ignoredValues.contains(uuid);
@@ -81,8 +90,21 @@ public class TaskManager {
     }
 
     public static void sendJoinDuration(final UUID u, final PPVPPlugin pl) {
-        for(int i=0;i<pl.actionbar_login_duration();i++) {
-            pl.getServer().getScheduler().scheduleSyncDelayedTask(pl, () -> TaskManager.sendInstantUpdate(u, pl), (i+1) * 20L);
+        for(int i=0;i<pl.actionbar_login_duration()+1;i++) {
+            pl.getServer().getScheduler().scheduleSyncDelayedTask(pl, () -> TaskManager.sendInstantUpdate(u, pl), i * 20L);
+        }
+    }
+
+    public static void blockedAttack(final UUID... us) {
+        if(PPVPPlugin.inst().actionbar_attack_duration()<1) return;
+        PPVPPlugin pl = PPVPPlugin.inst();
+        String reminder = pl.use_reminder() ? pl.pvp_on_reminder() : pl.actionbar_message();
+        for(UUID u : us) {
+            if (ignoredPositive(u) && !PVPManager.isPvpEnabled(u)) {
+                for (int i = 0; i < pl.actionbar_attack_duration()+1; i++) {
+                    pl.getServer().getScheduler().scheduleSyncDelayedTask(pl, () -> TaskManager.sendInstantUpdate(u, pl,reminder), i * 20L);
+                }
+            }
         }
     }
 

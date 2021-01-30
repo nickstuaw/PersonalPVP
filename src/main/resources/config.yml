@@ -12,14 +12,15 @@ prevent:
 togglable-actionbar:
   enable: true
   show-actionbar-on-first-join: false
-  show-on-login-duration-seconds: 5.0 # Show the actionbar for x seconds on login if ^ is false?
+  show-on-login-duration-seconds: 5.0 # Show the actionbar for x seconds on login if ^ is false? 0 to disable
+  show-on-attack-duration-seconds: 5.0 # 0 to disable
   reset-actionbar-status-on-quit: false
   message: "<pvpprefix>PVP: <pvpstatus></gradient> <gray>-</gray> <gold><worldtime>"
   worldtime-in-world: "world"
   # placeholder values of <pvpstatus> in message
   pvpstatus: ["Enabled","Disabled"]
   pvp-status-dependent-prefixes: ["<gradient:#b82a11:#d41c43>","<gradient:#d41c43:#b82a11>"]
-  reminder-to-enable-pvp: "<#ed4213>Use <red><bold>/pvp<#ed4213> to enable pvp." # Set to "" to disable reminder.
+  reminder-to-enable-pvp: "<#ed4213>Use <red><bold>/pvp<#ed4213> to enable pvp." # Set to "" to use default message.
 storage:
   filename: "data.ser"
 command-settings:

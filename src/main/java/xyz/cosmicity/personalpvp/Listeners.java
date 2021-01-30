@@ -6,7 +6,10 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityCombustByEntityEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -20,6 +23,8 @@ import xyz.cosmicity.personalpvp.managers.TaskManager;
 
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Listeners implements Listener {
 
@@ -41,7 +46,6 @@ public class Listeners implements Listener {
         }
         if(pl.getConfig().getBoolean("togglable-actionbar.enable")) {
             pl.getServer().getPluginManager().registerEvents(this, pl);
-
         }
     }
     @EventHandler(priority = EventPriority.LOWEST)
@@ -66,8 +70,10 @@ class DamageByEntityListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onDamage(@NotNull EntityDamageByEntityEvent e) {
         if(!(e.getEntity() instanceof Player) || !(e.getDamager() instanceof Player)) return;
-        if(PVPManager.pvpNegative(e.getEntity().getUniqueId())||PVPManager.pvpNegative(e.getDamager().getUniqueId())) {
+        UUID entityUuid = e.getEntity().getUniqueId(), damagerUuid = e.getDamager().getUniqueId();
+        if(PVPManager.isEitherNegative(entityUuid,damagerUuid)) {
             e.setCancelled(true);
+            TaskManager.blockedAttack(entityUuid,damagerUuid);
         }
     }
 }
@@ -87,10 +93,12 @@ class PotionListener implements Listener {
         if((!(e.getEntity().getShooter() instanceof Player) ||
                 e.getAffectedEntities().stream().noneMatch(entity -> entity instanceof Player))) return;
         if(e.getPotion().getEffects().stream().map(PotionEffect::getType).noneMatch(Arrays.asList(this.BAD_EFFECTS)::contains)) return;
+        Stream<UUID> stream = e.getAffectedEntities().stream().filter(livingEntity -> livingEntity instanceof Player).map(LivingEntity::getUniqueId);
         if(PVPManager.pvpNegative((((Player) e.getEntity().getShooter()).getUniqueId()))
-                || e.getAffectedEntities().stream().filter(livingEntity -> livingEntity instanceof Player).map(LivingEntity::getUniqueId).noneMatch(PVPManager::pvpPositive)) {
+                || stream.noneMatch(PVPManager::pvpPositive)) {
             e.setCancelled(true);
             ((Player) e.getEntity().getShooter()).getInventory().addItem(e.getEntity().getItem());
+            TaskManager.blockedAttack(stream.toArray(UUID[]::new));
         }
     }
 }
@@ -102,9 +110,10 @@ class ProjectileListener implements Listener {
         if(e.getHitEntity()==null ||
                 shooter == null ||
                 !(e.getHitEntity() instanceof Player)) return;
-        if(PVPManager.pvpNegative((shooter.getUniqueId()))
-                || PVPManager.pvpNegative((((e.getHitEntity()).getUniqueId())))) {
+        UUID shooterUuid = shooter.getUniqueId(), entityUuid = e.getHitEntity().getUniqueId();
+        if(PVPManager.isEitherNegative(shooterUuid,entityUuid)) {
             e.setCancelled(true);
+            TaskManager.blockedAttack(shooterUuid,entityUuid);
             if((shooter).getGameMode().equals(GameMode.CREATIVE)) return;
             if(projectile instanceof Trident) {
                 ItemStack is = ((Trident) projectile).getItemStack();
@@ -127,10 +136,10 @@ class FishingListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onFish(@NotNull PlayerFishEvent e) {
         if(!(e.getCaught() instanceof Player)) return;
-        if(PVPManager.pvpNegative(e.getCaught().getUniqueId())||PVPManager.pvpNegative(e.getPlayer().getUniqueId())) {
+        UUID caughtUuid = e.getCaught().getUniqueId(), playerUuid = e.getPlayer().getUniqueId();
+        if(PVPManager.isEitherNegative(caughtUuid,playerUuid)) {
             e.setCancelled(true);
-            PPVPPlugin pl = PPVPPlugin.inst();
-            if(!pl.pvp_on_reminder().isEmpty()&&PVPManager.pvpNegative(e.getPlayer().getUniqueId())) Utils.send(e.getPlayer(),Utils.parse(pl.pvp_on_reminder()),false,true);
+            TaskManager.blockedAttack(caughtUuid,playerUuid);
         }
     }
 }
@@ -139,9 +148,10 @@ class CombustionListener implements Listener {
     public void onCombust(final EntityCombustByEntityEvent e) {
         if(!(e.getCombuster() instanceof Player) ||
                 !(e.getEntity() instanceof Player)) return;
-        if(PVPManager.pvpNegative(e.getCombuster().getUniqueId())
-                || PVPManager.pvpNegative(((e.getEntity().getUniqueId())))) {
+        UUID combusterUuid = e.getCombuster().getUniqueId(), entityUuid = e.getEntity().getUniqueId();
+        if(PVPManager.isEitherNegative(combusterUuid,entityUuid)) {
             e.setCancelled(true);
+            TaskManager.blockedAttack(combusterUuid,entityUuid);
         }
     }
 }

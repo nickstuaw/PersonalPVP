@@ -42,6 +42,9 @@ public class PVPManager {
     public static boolean isPvpDisabled(final UUID uuid) {
         return PPVPPlugin.inst().default_pvp_status() == players.contains(uuid);
     }
+    public static boolean isEitherNegative(final UUID u1, final UUID u2) {
+        return pvpNegative(u1)||pvpNegative(u2);
+    }
 
     public static void load() {
         if(Utils.loaded().get(0) != null) players = Utils.loaded().get(0);
