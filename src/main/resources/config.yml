@@ -1,0 +1,48 @@
+# Minimessage support.
+# Color usage https://docs.adventure.kyori.net/minimessage.html#the-components
+version: 1.0 #Config version. This should be 1.0 to allow updates.
+auto-update-commands-yml: false
+prevent:
+  # Reloads aren't effective for these 'prevent.' settings.
+  fishing-rods: true
+  damage-from-players: true
+  throwable-projectiles: true
+  potions: true
+  combustion-from-players: false # Enable if some custom plugins are used (e.g. if players shoot firecharges)
+actionbar:
+  enable: true
+  show-actionbar-on-first-join: true
+  reset-actionbar-status-on-quit: false
+  message: "<pvpprefix>PVP: <pvpstatus></gradient> <gray>-</gray> <gold><worldtime>"
+  worldtime-in-world: "world"
+  # placeholder values of <pvpstatus> in message
+  pvpstatus: ["Enabled","Disabled"]
+  pvp-status-dependent-prefixes: ["<gradient:#b82a11:#d41c43>","<gradient:#d41c43:#b82a11>"]
+  reminder-to-enable-pvp: "<#ed4213>Use <red><bold>/pvp<#ed4213> to enable pvp." # Set to "" to disable reminder.
+storage:
+  filename: "data.ser"
+command-settings:
+  pvp-toggle:
+    cooldown: 3 # Cooldown (seconds) for /pvp
+    # Bypass perm: [/pvp permission].bypass
+    # PVP status on first join: true (on) or false (off)?
+    # Use /pvpctl resetglobal after you change this.
+    default-pvp-status: false
+    # Reset PVP status on quit?
+    reset-on-quit: false
+    enabled: "<yellow>PVP <aqua>enabled</aqua>!"
+    disabled: "<yellow>PVP <green>disabled</green>!"
+    cooldown-prompt: "<red>You can do that again in <yellow><bold><seconds></bold></yellow>."
+    send-action-bar-on-toggle: true
+    log-to-console: false
+    console-format: "<pvpstatus> PVP for <name>."
+    # placeholder values of <pvpstatus> in console-format
+    pvpstatus: ["<aqua>Enabled","<green>Disabled"]
+  pvp-control:
+    personal-lines:
+      - "<green>[<click:run_command:/pvpcontrol mystatus><gradient:gray:white><bold>GET PVP STATUS</bold></gradient></click><green>]"
+      - "[<click:run_command:/pvpcontrol toggleme><gradient:white:gray><bold>TOGGLE PVP</bold></gradient></click><green>]"
+    lines:
+      - "<green>[<click:suggest_command:/pvpcontrol resetglobal><hover:show_text:'<aqua>Reset offline players as well as online players.'><gradient:green:aqua><bold>FULL</gradient> <gradient:aqua:green>RESET</gradient></bold></hover></click><green>]"
+      - "[<click:suggest_command:/pvp enable @a><gradient:green:aqua><bold>ENABLE AL</gradient><gradient:aqua:green>L ONLINE</gradient></bold></click><green>]"
+      - "[<click:suggest_command:/pvp disable @a><gradient:green:aqua><bold>DISABLE A</gradient><gradient:aqua:green>LL ONLINE</gradient></bold></click><green>]"

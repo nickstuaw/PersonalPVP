@@ -1,0 +1,6 @@
+name: PersonalPVP
+version: ${project.version}
+main: xyz.cosmicity.personalpvp.PPVPPlugin
+api-version: 1.16
+authors: [ CosmicSilence ]
+website: https://github.com/Nebula-O
