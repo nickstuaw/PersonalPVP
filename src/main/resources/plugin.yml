@@ -4,3 +4,12 @@ main: xyz.cosmicity.personalpvp.PPVPPlugin
 api-version: 1.16
 authors: [ CosmicSilence ]
 website: https://github.com/Nebula-O
+permissions:
+  personalpvp.player:
+    children:
+      - personalpvp.help
+      - personalpvp.togglepvp
+      - personalpvp.pvpcontrol
+      - personalpvp.toggleactionbar
+    default: not op
+    description: All default permissions.
