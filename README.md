@@ -7,6 +7,7 @@ that can be viewed in [config.yml](/src/main/resources/config.yml).
 ### Useful links:
 - [Commands and Permissions](https://github.com/Nebula-O/PersonalPVP/wiki/Commands-and-Permissions)
 - [Descriptive config.yml](/src/main/resources/config.yml)
+- [Spigot page](https://www.spigotmc.org/resources/personalpvp.88468/)
 ## Projectiles and potion throwing
 When one player (or both) has PVP enabled and they try to attack a player who has PVP disabled (or vice-versa), no damage is dealt.
 If they threw a projectile (by shooting an arrow from a bow or throwing a trident at the player) or a splash potion, the projectile will be
