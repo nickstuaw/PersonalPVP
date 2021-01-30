@@ -41,13 +41,13 @@ public class CommandHandler {
         section = pl.commands().getConfigurationSection("commands.pvpcontrol");
         details = new CommandDetails(section);
         setup(details,new PVPControlCommand());
+        permissions.add(details.permission() + ".admin");
         section = pl.commands().getConfigurationSection("commands.pvpother");
         details = new CommandDetails(section);
         setup(details,new PVPOtherCommand());
         section = pl.commands().getConfigurationSection("commands.pvplist");
         details = new CommandDetails(section);
         setup(details,new PVPListCommand());
-        permissions.add(details.permission() + ".admin");
         section = pl.commands().getConfigurationSection("commands.help");
         details = new CommandDetails(section);
         setup(details,new HelpCommand());
