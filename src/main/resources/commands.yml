@@ -36,7 +36,7 @@ commands:
     label: "pvpresetplayer"
     permission: "personalpvp.resetplayer"
     aliases: [ "pvprs","resetpvp" ]
-    description: "PVP admin controls."
+    description: "Reset a specific (+offline) player's PVP status."
   pvplist:
     enabled: true
     label: "pvplist"
