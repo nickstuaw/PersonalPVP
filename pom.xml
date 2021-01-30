@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>xyz.cosmicity</groupId>
-    <artifactId>PersonalPvP</artifactId>
+    <artifactId>PersonalPVP</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 
@@ -46,7 +46,6 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
                             <relocations>
                                 <relocation>
                                     <pattern>dev.jorel.commandapi-shade</pattern>
@@ -96,12 +95,6 @@
             <groupId>dev.jorel</groupId>
             <artifactId>commandapi-shade</artifactId>
             <version>5.8</version>
-        </dependency>
-        <dependency>
-            <groupId>dev.jorel</groupId>
-            <artifactId>commandapi-core</artifactId>
-            <version>5.8</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>

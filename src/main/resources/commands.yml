@@ -1,4 +1,4 @@
-version: 1.0
+version: 1.1
 commands:
   reload:
     enabled: true
@@ -30,6 +30,12 @@ commands:
     label: "pvpother"
     permission: "personalpvp.pvpother"
     aliases: [ "pvpo","setpvp" ]
+    description: "PVP admin controls."
+  pvpresetplayer:
+    enabled: true
+    label: "pvpresetplayer"
+    permission: "personalpvp.resetplayer"
+    aliases: [ "pvprs","resetpvp" ]
     description: "PVP admin controls."
   pvplist:
     enabled: true

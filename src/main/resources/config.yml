@@ -1,7 +1,7 @@
 # Minimessage support.
 # Color usage https://docs.adventure.kyori.net/minimessage.html#the-components
 version: 1.1 #Config version. This should be 1.1 to allow updates.
-auto-update-commands-yml: false
+auto-update-commands-yml: true # You'll be met with errors if this is disabled with a new plugin jar.
 prevent:
   # Reloads aren't effective for these 'prevent.' settings.
   fishing-rods: true
@@ -45,8 +45,9 @@ command-settings:
     pvpstatus: ["<aqua>Enabled","<green>Disabled"]
   pvp-control:
     personal-lines:
-      - "<green>[<click:run_command:/pvpcontrol mystatus><gradient:gray:white><bold>GET PVP STATUS</bold></gradient></click><green>]"
-      - "[<click:run_command:/pvpcontrol toggleme><gradient:white:gray><bold>TOGGLE PVP</bold></gradient></click><green>]"
+      - "<green>[<click:run_command:/pvpcontrol toggleme><gradient:gray:white><bold>TOGGLE PVP</bold></gradient></click><green>]"
+      - "<green>[<click:run_command:/pvpcontrol mystatus><gradient:white:gray><bold>GET PVP STATUS</bold></gradient></click><green>]"
+      - "<green>[<click:run_command:/togglebar><gradient:gray:white><bold>TOGGLE ACTIONBAR VISIBILITY</bold></gradient></click><green>]"
     lines:
       - "<green>[<click:suggest_command:/pvpcontrol resetglobal><hover:show_text:'<aqua>Reset offline players as well as online players.'><gradient:green:aqua><bold>FULL</gradient> <gradient:aqua:green>RESET</gradient></bold></hover></click><green>]"
       - "[<click:suggest_command:/pvpother enable @a><gradient:green:aqua><bold>ENABLE AL</gradient><gradient:aqua:green>L ONLINE</gradient></bold></click><green>]"

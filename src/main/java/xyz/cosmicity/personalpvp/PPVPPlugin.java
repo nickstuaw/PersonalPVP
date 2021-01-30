@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 
 public final class PPVPPlugin extends JavaPlugin {
 
-    public static final double VERSION = 1.1, CONFIG_VERSION = 1.1, COMMANDS_VERSION = 1.0;
+    public static final double VERSION = 1.2, CONFIG_VERSION = 1.1, COMMANDS_VERSION = 1.1;
 
     private YamlConfiguration commandsConfig;
 
@@ -56,9 +56,12 @@ public final class PPVPPlugin extends JavaPlugin {
     }
 
     @Override
-    public void onEnable() {
-
+    public void onLoad() {
         CommandAPI.onLoad(false);
+    }
+
+    @Override
+    public void onEnable() {
         CommandAPI.onEnable(this);
 
         Utils.setPlugin(this);
