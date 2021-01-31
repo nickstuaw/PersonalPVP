@@ -8,6 +8,7 @@ that can be viewed in [config.yml](/src/main/resources/config.yml).
 
 ### Useful links:
 - [Commands and Permissions](https://github.com/Nebula-O/PersonalPVP/wiki/Commands-and-Permissions)
+- [Discord Server](https://discord.gg/JjWDdNdK5F)
 - [Descriptive config.yml](/src/main/resources/config.yml)
 - [Spigot page](https://www.spigotmc.org/resources/personalpvp.88468/)
 ## Projectiles and potion throwing
