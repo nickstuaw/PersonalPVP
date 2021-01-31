@@ -13,3 +13,21 @@ permissions:
       - personalpvp.toggleactionbar
     default: not op
     description: All default permissions.
+  personalpvp.admin:
+    default: op
+    description: Complete set of PVP permissions.
+    children:
+    - personalpvp.reload
+    - personalpvp.update
+    - personalpvp.togglepvp
+    - personalpvp.togglepvp.other
+    - personalpvp.togglepvp.bypass
+    - personalpvp.toggleactionbar
+    - personalpvp.pvpcontrol
+    - personalpvp.pvpcontrol.admin
+    - personalpvp.pvpother
+    - personalpvp.resetplayer
+    - personalpvp.lock
+    - personalpvp.listpvp
+    - personalpvp.help
+    - personalpvp.listpermissions

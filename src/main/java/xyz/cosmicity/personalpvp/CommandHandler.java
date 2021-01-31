@@ -261,13 +261,13 @@ class PVPToggleLockedOfflineCommand extends Command {
 class PVPLockStatusCommand extends Command {
     public void register(final CommandDetails details) {
         details.registerCommand((s,args)->{
-            OfflinePlayer target = (OfflinePlayer) args[0];
+            Player target = (Player) args[0];
             UUID u = target.getUniqueId();
             String name = target.getName();
             String locked = PVPManager.isLocked(u)?"locked":"unlocked";
             Utils.send(s,
                     Utils.parse("<hover:show_text:'<yellow>PVP "+(PVPManager.isPvpEnabled(u)?"<aqua>Enabled</aqua>":"<green>Disabled</green>")+" for "+name+"</yellow>'><blue>"+name+" has PVP "+locked+".</blue></hover>"), true, false);
-        }, Utils.offlinePlayerArgument("player"));
+        }, new PlayerArgument("player"));
     }
 }
 class HelpCommand extends Command {
@@ -291,7 +291,7 @@ class HelpCommand extends Command {
             if(((max-1)*pgSize)-size<pgSize && pg == max) {
                 cmdList = cmdList.subList(size-(size%((max-1)*pgSize)),size);
             } else
-                cmdList = cmdList.subList((((pg-1)*(pgSize))>size)?size-1-(size%(pgSize)):(pg-1)*pgSize,(pg*pgSize>size)?size-1:pg*pgSize);
+                cmdList = cmdList.subList(((pg-1)*pgSize),(pg*pgSize>size)?size-1:pg*pgSize);
             if(s instanceof Player) {
                 Utils.sendText((Player)s, Utils.parse(
                         title + "\n"+ String.join("\n",cmdList) + "\n" + title

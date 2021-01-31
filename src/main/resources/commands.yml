@@ -42,19 +42,19 @@ commands:
     label: "pvplocktoggle"
     permission: "personalpvp.lock"
     aliases: [ "lockpvp","pvptoglock","pvplocktogg","unlockpvp","pvplock","pvpunlock" ]
-    description: "Toggle a player's lock (lock or unlock their PVP status)."
+    description: "Toggle an online player's lock (lock or unlock their PVP status)."
   pvplockofflinetoggle:
     enabled: true
     label: "pvplockofflinetoggle"
     permission: "personalpvp.lock"
     aliases: [ "lockpvpoffline","pvptoglockoffline","pvplocktoggoffline","unlockpvpoffline","pvplockoffline","pvpunlockoffline" ]
-    description: "Toggle a player's lock (lock or unlock their PVP status)."
+    description: "Toggle a player's PVP lock (lock or unlock their PVP status)."
   pvplockstatus:
     enabled: true
     label: "pvplockstatus"
     permission: "personalpvp.lock"
-    aliases: [ "ispvplocked" ]
-    description: "Check if a player has PVP locked."
+    aliases: [ "ispvplocked", "statuspvplock" ]
+    description: "Check if an online player has PVP locked."
   pvplist:
     enabled: true
     label: "pvplist"
