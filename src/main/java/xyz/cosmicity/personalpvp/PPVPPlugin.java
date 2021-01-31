@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 
 public final class PPVPPlugin extends JavaPlugin {
 
-    public static final double VERSION = 1.2;
+    public static final double VERSION = 1.3;
 
     private final Logger log = this.getLogger();
 
