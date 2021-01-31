@@ -25,22 +25,22 @@ import java.util.stream.Stream;
 public class Listeners implements Listener {
 
     public Listeners(final PPVPPlugin pl) {
-        if(pl.prevent_player_damage()) {
+        if(Config.prevent_player_damage()) {
             pl.getServer().getPluginManager().registerEvents(new DamageByEntityListener(), pl);
         }
-        if(pl.prevent_fishing_rods()) {
+        if(Config.prevent_fishing_rods()) {
             pl.getServer().getPluginManager().registerEvents(new FishingListener(), pl);
         }
-        if(pl.prevent_projectiles()) {
+        if(Config.prevent_projectiles()) {
             pl.getServer().getPluginManager().registerEvents(new ProjectileListener(), pl);
         }
-        if(pl.prevent_potions()) {
+        if(Config.prevent_potions()) {
             pl.getServer().getPluginManager().registerEvents(new PotionListener(), pl);
         }
-        if(pl.prevent_combustion()) {
+        if(Config.prevent_combustion()) {
             pl.getServer().getPluginManager().registerEvents(new CombustionListener(), pl);
         }
-        if(pl.getConfig().getBoolean("togglable-actionbar.enable")) {
+        if(Config.enable_toggleable_actionbar()) {
             pl.getServer().getPluginManager().registerEvents(this, pl);
         }
         pl.getServer().getPluginManager().registerEvents(new DeathListener(), pl);
@@ -49,7 +49,7 @@ public class Listeners implements Listener {
     public void onJoin(final PlayerJoinEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
         TaskManager.addUuid(uuid);
-        if(PPVPPlugin.inst().actionbar_login_duration()<1 || TaskManager.ignoredNegative(uuid)) return;
+        if(Config.actionbar_login_duration()<1 || TaskManager.ignoredNegative(uuid)) return;
         TaskManager.sendJoinDuration(uuid, PPVPPlugin.inst());
     }
     @EventHandler(priority = EventPriority.MONITOR)
@@ -68,8 +68,8 @@ class DeathListener implements Listener {
     public void onDeath(final PlayerDeathEvent e) {
         if(e.getEntity().getKiller() == null) return;
         e.getDrops().clear();
-        e.setKeepInventory(PPVPPlugin.inst().keep_inv_pvp());
-        e.setKeepLevel(PPVPPlugin.inst().keep_xp_pvp());
+        e.setKeepInventory(Config.keep_inv_pvp());
+        e.setKeepLevel(Config.keep_xp_pvp());
     }
 }
 class DamageByEntityListener implements Listener {

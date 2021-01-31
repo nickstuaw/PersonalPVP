@@ -1,8 +1,10 @@
 package xyz.cosmicity.personalpvp.managers;
 
 import org.bukkit.Bukkit;
+import xyz.cosmicity.personalpvp.Config;
 import xyz.cosmicity.personalpvp.PPVPPlugin;
 import xyz.cosmicity.personalpvp.Utils;
+import xyz.cosmicity.personalpvp.storage.Message;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +34,9 @@ public class TaskManager {
 
     public static void start() {
         actionbarTask = PPVPPlugin.inst().getServer().getScheduler().scheduleSyncRepeatingTask(PPVPPlugin.inst(), () -> {
-            PPVPPlugin pl = PPVPPlugin.inst();
-            String actionbarMessage = pl.actionbar_message();
+            String actionbarMessage = Config.actionbar_message();
             if (actionbarMessage.contains("<worldtime>")) {
-                int time = (int) (Bukkit.getWorld(pl.worldtime_in_world()).getTime()) + 6000, tmpHours, tmpMinutes;
+                int time = (int) (Bukkit.getWorld(Config.worldtime_in_world()).getTime()) + 6000, tmpHours, tmpMinutes;
                 final String sfx = (24000 <= time && time <= 30000) || time <= 12000 ? "am" : "pm";
                 tmpHours = (int) (time / 1000f) - 12;
                 tmpHours += tmpHours < 1 ? 12 : (tmpHours > 12 ? -12 : 0);
@@ -45,64 +46,60 @@ public class TaskManager {
                 setSuffix(sfx);
             }
             if(onlineUuids.size()>0) {
-                onlineUuids.stream().filter(TaskManager::ignoredNegative).forEach(u -> sendUpdate(u, pl));
+                onlineUuids.stream().filter(TaskManager::ignoredNegative).forEach(u -> sendUpdate(u, PPVPPlugin.inst()));
             }
-            }, 20L, 20L);//17L
+            }, 20L, 17L);//17L
     }
 
     public static boolean ignoredPositive(final UUID u) {
-        return PPVPPlugin.inst().default_actionbar_status() == ignoredValues.contains(u);
+        return Config.default_actionbar_status() == ignoredValues.contains(u);
     }
     public static boolean ignoredNegative(final UUID u) {
-        return PPVPPlugin.inst().default_actionbar_status() != ignoredValues.contains(u);
+        return Config.default_actionbar_status() != ignoredValues.contains(u);
     }
 
     public static void sendUpdate(final UUID u, final PPVPPlugin pl) {
         if(ignoredPositive(u)) return;
         if(Bukkit.getPlayer(u)==null || ignoredPositive(u)) return;
-        sendInstantUpdate(u,pl);
+        sendInstantUpdate(u);
     }
 
-    public static void sendInstantUpdate(final UUID u, final PPVPPlugin pl) {
-        Utils.send(Bukkit.getPlayer(u), Utils.parse(pl.actionbar_message(),
+    public static void sendInstantUpdate(final UUID u) {
+        Utils.send(Bukkit.getPlayer(u), Utils.parse(Config.actionbar_message(),
                 "pvpprefix",
-                pl.actionbar_pvp_prefixes()[PVPManager.pvpPositive(u) ? 0 : 1],
+                Config.actionbar_pvp_prefixes()[PVPManager.pvpPositive(u) ? 0 : 1],
                 "pvpstatus",
-                pl.actionbar_pvp_statuses()[PVPManager.pvpPositive(u) ? 0 : 1],
+                Config.actionbar_pvp_statuses()[PVPManager.pvpPositive(u) ? 0 : 1],
                 "worldtime", (hours<10?"0":"")+hours+":"+(minutes<10?"0":"")+minutes+suffix),
                 false, true);
     }
-    public static void sendInstantUpdate(final UUID u, final PPVPPlugin pl, final String msg) {
-        Utils.send(Bukkit.getPlayer(u), Utils.parse(msg,
-                "pvpprefix",
-                pl.actionbar_pvp_prefixes()[PVPManager.pvpPositive(u) ? 0 : 1],
-                "pvpstatus",
-                pl.actionbar_pvp_statuses()[PVPManager.pvpPositive(u) ? 0 : 1],
-                "worldtime", (hours<10?"0":"")+hours+":"+(minutes<10?"0":"")+minutes+suffix),
-                false, true);
+    public static void sendInstantUpdate(final UUID u, final Message msg) {
+        Utils.send(msg.parse("pvpprefix",Config.actionbar_pvp_prefixes()[PVPManager.pvpPositive(u) ? 0 : 1],
+                "pvpstatus",Config.actionbar_pvp_statuses()[PVPManager.pvpPositive(u) ? 0 : 1],
+                "worldtime", (hours<10?"0":"")+hours+":"+(minutes<10?"0":"")+minutes+suffix),Bukkit.getPlayer(u));
     }
 
     public static boolean toggleHidden(final UUID uuid) {
         boolean c = ignoredValues.contains(uuid);
         if(c) ignoredValues.remove(uuid);
         else ignoredValues.add(uuid);
-        return PPVPPlugin.inst().default_actionbar_status() == c;
+        return Config.default_actionbar_status() == c;
     }
 
     public static void sendJoinDuration(final UUID u, final PPVPPlugin pl) {
-        for(int i=0;i<pl.actionbar_login_duration()+1;i++) {
-            pl.getServer().getScheduler().scheduleSyncDelayedTask(pl, () -> TaskManager.sendInstantUpdate(u, pl), i * 20L);
+        for(int i=0;i<Config.actionbar_login_duration()+1;i++) {
+            pl.getServer().getScheduler().scheduleSyncDelayedTask(pl, () -> TaskManager.sendInstantUpdate(u), i * 20L);
         }
     }
 
     public static void blockedAttack(final UUID... us) {
-        if(PPVPPlugin.inst().actionbar_attack_duration()<1) return;
+        if(Config.actionbar_attack_duration()<1) return;
         PPVPPlugin pl = PPVPPlugin.inst();
-        String reminder = pl.use_reminder() ? pl.pvp_on_reminder() : pl.actionbar_message();
+        Message reminder = Config.pvp_on_reminder();
         for(UUID u : us) {
             if (ignoredPositive(u) && !PVPManager.isPvpEnabled(u)) {
-                for (int i = 0; i < pl.actionbar_attack_duration()+1; i++) {
-                    pl.getServer().getScheduler().scheduleSyncDelayedTask(pl, () -> TaskManager.sendInstantUpdate(u, pl,reminder), i * 20L);
+                for (int i = 0; i < Config.actionbar_attack_duration()+1; i++) {
+                    pl.getServer().getScheduler().scheduleSyncDelayedTask(pl, () -> TaskManager.sendInstantUpdate(u, reminder), i * 20L);
                 }
             }
         }

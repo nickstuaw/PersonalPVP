@@ -1,4 +1,4 @@
-package xyz.cosmicity.personalpvp.commands;
+package xyz.cosmicity.personalpvp.storage;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;

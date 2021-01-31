@@ -1,17 +1,20 @@
-package xyz.cosmicity.personalpvp.commands;
+package xyz.cosmicity.personalpvp;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.EntitySelectorArgument;
+import dev.jorel.commandapi.arguments.PlayerArgument;
 import dev.jorel.commandapi.arguments.TextArgument;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import xyz.cosmicity.personalpvp.PPVPPlugin;
-import xyz.cosmicity.personalpvp.Utils;
+import org.yaml.snakeyaml.Yaml;
+import xyz.cosmicity.personalpvp.storage.Command;
+import xyz.cosmicity.personalpvp.storage.CommandDetails;
 import xyz.cosmicity.personalpvp.managers.PVPManager;
 
 import java.io.File;
@@ -27,40 +30,49 @@ public class CommandHandler {
 
     @SuppressWarnings("ConstantConditions")
     public CommandHandler() {
-        PPVPPlugin pl = PPVPPlugin.inst();
+        YamlConfiguration commandsConfig = Config.commands();
         ConfigurationSection section;
         CommandDetails details;
-        section = pl.commands().getConfigurationSection("commands.reload");
+        section = commandsConfig.getConfigurationSection("commands.reload");
         details = new CommandDetails(section);
         setup(details,new ReloadCommand());
-        section = pl.commands().getConfigurationSection("commands.update");
+        section = commandsConfig.getConfigurationSection("commands.update");
         details = new CommandDetails(section);
         setup(details,new UpdateCommand());
-        section = pl.commands().getConfigurationSection("commands.pvp");
+        section = commandsConfig.getConfigurationSection("commands.pvp");
         details = new CommandDetails(section);
         setup(details,new PVPCommand());
         permissions.add(details.permission() + ".other");
         permissions.add(details.permission() + ".bypass");
-        section = pl.commands().getConfigurationSection("commands.togglebar");
+        section = commandsConfig.getConfigurationSection("commands.togglebar");
         details = new CommandDetails(section);
         setup(details,new ToggleBarCommand());
-        section = pl.commands().getConfigurationSection("commands.pvpcontrol");
+        section = commandsConfig.getConfigurationSection("commands.pvpcontrol");
         details = new CommandDetails(section);
         setup(details,new PVPControlCommand());
         permissions.add(details.permission() + ".admin");
-        section = pl.commands().getConfigurationSection("commands.pvpother");
+        section = commandsConfig.getConfigurationSection("commands.pvpother");
         details = new CommandDetails(section);
         setup(details,new PVPOtherCommand());
-        section = pl.commands().getConfigurationSection("commands.pvpresetplayer");
+        section = commandsConfig.getConfigurationSection("commands.pvpresetplayer");
         details = new CommandDetails(section);
         setup(details,new PVPResetPlayerCommand());
-        section = pl.commands().getConfigurationSection("commands.pvplist");
+        section = commandsConfig.getConfigurationSection("commands.pvplocktoggle");
+        details = new CommandDetails(section);
+        setup(details,new PVPToggleLockedCommand());
+        section = commandsConfig.getConfigurationSection("commands.pvplockofflinetoggle");
+        details = new CommandDetails(section);
+        setup(details,new PVPToggleLockedOfflineCommand());
+        section = commandsConfig.getConfigurationSection("commands.pvplockstatus");
+        details = new CommandDetails(section);
+        setup(details,new PVPLockStatusCommand());
+        section = commandsConfig.getConfigurationSection("commands.pvplist");
         details = new CommandDetails(section);
         setup(details,new PVPListCommand());
-        section = pl.commands().getConfigurationSection("commands.help");
+        section = commandsConfig.getConfigurationSection("commands.help");
         details = new CommandDetails(section);
         setup(details,new HelpCommand());
-        section = pl.commands().getConfigurationSection("commands.perms");
+        section = commandsConfig.getConfigurationSection("commands.perms");
         details = new CommandDetails(section);
         if(details.isOn()) {
             commands.add(details);
@@ -81,18 +93,17 @@ public class CommandHandler {
 class PVPCommand extends Command{
     public void register(final CommandDetails details) {
         details.registerPlayerCommand((p, args) -> {
-            if(Utils.togglePersonal(p, PPVPPlugin.inst())) notifyConsole(p.getName(), PVPManager.isPvpEnabled(p.getUniqueId()));
+            if(Utils.togglePersonal(p)) notifyConsole(p.getName(), PVPManager.isPvpEnabled(p.getUniqueId()));
         });
     }
     private void notifyConsole(final String tName, final boolean setTo) {
-        if(PPVPPlugin.inst().pvp_toggle_log_to_console()) Utils.send(Utils.parse(PPVPPlugin.inst().console_format(),"name",tName,"pvpstatus", PPVPPlugin.inst().console_pvpstatuses()[(setTo?0:1)]));
+        if(Config.pvp_toggle_log_to_console()) Utils.send(Utils.parse(Config.console_format(),"name",tName,"pvpstatus", Config.console_pvpstatuses()[(setTo?0:1)]));
     }
 }
 class PVPControlCommand extends Command {
     private final String title = "<gradient:green:aqua>- - - -</gradient> <white><bold>PVP Control</bold> <gradient:aqua:green>- - - -</gradient>";
     public void register(final CommandDetails details) {
-        PPVPPlugin pl = PPVPPlugin.inst();
-        details.registerCommand((s, args) -> Utils.send(s, Utils.parse(this.title+"\n" + pl.pvpcontrol_personal_lines() +(s.hasPermission(details.permission()+".admin")?"\n<green><underlined>Admin</underlined>\n"+pl.pvpcontrol_lines()+"\n":"\n")+this.title), true, false));
+        details.registerCommand((s, args) -> Utils.send(s, Utils.parse(this.title+"\n" + Config.pvpcontrol_personal_lines() +(s.hasPermission(details.permission()+".admin")?"\n<green><underlined>Admin</underlined>\n"+Config.pvpcontrol_lines()+"\n":"\n")+this.title), true, false));
         details.registerCommand((s, args) -> {
             switch ((String) args[0]) {
                 case "resetglobal":
@@ -101,14 +112,14 @@ class PVPControlCommand extends Command {
                         break;
                     }
                     PVPManager.players().forEach(PVPManager::remove);
-                    Utils.send(s, Utils.parse("<yellow>You <hover:show_text:'" + (pl.default_pvp_status() ? "<aqua>ENABLED" : "<green>DISABLED") + "'>reset</hover> PVP <hover:show_text:'Including offline players.'>for every player</hover>."), true, false);
+                    Utils.send(s, Utils.parse("<yellow>You <hover:show_text:'" + (Config.default_pvp_status() ? "<aqua>ENABLED" : "<green>DISABLED") + "'>reset</hover> PVP <hover:show_text:'Including offline players.'>for every player</hover>."), true, false);
                     return;
                 case "toggleme":
                     if(!(s instanceof Player)) {
                         CommandAPI.fail("/pvp mystatus is player only.");
                         return;
                     }
-                    if(Utils.togglePersonal((Player)s, pl)) notifyConsole((Player)s);
+                    if(Utils.togglePersonal((Player)s)) notifyConsole((Player)s);
                     return;
                 case "mystatus":
                     if(!(s instanceof Player)) {
@@ -126,7 +137,7 @@ class PVPControlCommand extends Command {
         ));
     }
     private void notifyConsole(final Player p) {
-        if(PPVPPlugin.inst().pvp_toggle_log_to_console()) Utils.send(Utils.parse(PPVPPlugin.inst().console_format(),"name",p.getName(),"pvpstatus", PPVPPlugin.inst().console_pvpstatuses()[(PVPManager.isPvpEnabled(p.getUniqueId())?0:1)]));
+        if(Config.pvp_toggle_log_to_console()) Utils.send(Utils.parse(Config.console_format(),"name",p.getName(),"pvpstatus", Config.console_pvpstatuses()[(PVPManager.isPvpEnabled(p.getUniqueId())?0:1)]));
     }
 }
 class PVPListCommand extends Command {
@@ -136,7 +147,7 @@ class PVPListCommand extends Command {
                     .filter(PVPManager::pvpPositive)
                     .map(Bukkit::getOfflinePlayer)
                     .map(OfflinePlayer::getName).collect(Collectors.toList());
-            Utils.send(s, Utils.parse((!PPVPPlugin.inst().default_pvp_status()?"<aqua>PVP is enabled for: </aqua>":"<green>PVP is disabled for: </green>")+String.join(", ",list)),true,false);
+            Utils.send(s, Utils.parse((!Config.default_pvp_status()?"<aqua>PVP is enabled for: </aqua>":"<green>PVP is disabled for: </green>")+String.join(", ",list)),true,false);
         });
     }
 }
@@ -176,7 +187,7 @@ class PVPOtherCommand extends Command {
                             PVPManager.remove(u);
                             quantity.set(0, quantity.get(0)+1);
                         });
-                msg = PPVPPlugin.inst().default_pvp_status()?"<aqua>enabled</aqua>":"<green>disabled</green>";
+                msg = Config.default_pvp_status()?"<aqua>enabled</aqua>":"<green>disabled</green>";
                 break;
             case "enable":
                 playerUuids.stream().filter(PVPManager::isPvpDisabled)
@@ -194,12 +205,6 @@ class PVPOtherCommand extends Command {
                         });
                 msg = "<green>disabled</green>";
                 break;
-            case "list":
-                List<String> list = Bukkit.getOnlinePlayers().stream().map(Player::getUniqueId)
-                        .filter(PVPManager::pvpPositive).map(Bukkit::getPlayer).filter(Objects::nonNull)
-                        .map(Player::getName).collect(Collectors.toList());
-                Utils.send(s, Utils.parse((PPVPPlugin.inst().default_pvp_status()?"<aqua>PVP is enabled for: </aqua>":"<green>PVP is disabled for: </green>")+String.join(", ",list)),true,false);
-                return;
             default:
                 CommandAPI.fail("Unknown operation.");
                 return;
@@ -210,20 +215,64 @@ class PVPOtherCommand extends Command {
         notifyConsole("<yellow>"+s.getName()+"</yellow> "+raw);
     }
     private void notifyConsole(final String msg) {
-        if(PPVPPlugin.inst().pvp_toggle_log_to_console()) Utils.send(Utils.parse(msg));
+        if(Config.pvp_toggle_log_to_console()) Utils.send(Utils.parse(msg));
     }
 }
 class PVPResetPlayerCommand extends Command {
     public void register(final CommandDetails details) {
         details.registerCommand((s, args) -> {
-            OfflinePlayer target = Bukkit.getServer().getOfflinePlayerIfCached((String) args[0]);
+            Player target = (Player) args[0];
             if(target == null) {
                 CommandAPI.fail("Player not found.");
                 return;
             }
             PVPManager.remove(target.getUniqueId());
-            Utils.send(s, Utils.parse(PPVPPlugin.inst().default_pvp_status()?"<aqua>":"<green>"+"PVP status reset for "+target.getName()), true, false);
-        }, new TextArgument("player"));
+            Utils.send(s, Utils.parse(Config.default_pvp_status()?"<aqua>":"<green>"+"PVP status reset for "+target.getName()), true, false);
+        }, new PlayerArgument("player"));
+    }
+}
+class PVPToggleLockedCommand extends Command {
+    public void register(final CommandDetails details) {
+        details.registerCommand((s,args)->{
+            Player target = (Player) args[0];
+            if(target==null) return;
+            UUID u = target.getUniqueId();
+            String name = target.getName();
+            String locked = PVPManager.toggleLocked(u)?"locked":"unlocked";
+            Utils.send(s,
+                    Utils.parse(
+                            "<hover:show_text:'<yellow>PVP "+(PVPManager.isPvpEnabled(u)?"<aqua>Enabled</aqua>":"<green>Disabled</green>")+" for "+name+"</yellow>'>"+
+                            "<blue>PVP "+locked+" for "+target.getName()+
+                                    ".</blue>"), true, false);
+        }, new PlayerArgument("player"));
+    }
+}
+class PVPToggleLockedOfflineCommand extends Command {
+    public void register(final CommandDetails details) {
+        details.registerCommand((s,args)->{
+            OfflinePlayer target = (OfflinePlayer) args[0];
+            if(target==null) return;
+            UUID u = target.getUniqueId();
+            String name = target.getName();
+            String locked = PVPManager.toggleLocked(u)?"locked":"unlocked";
+            Utils.send(s,
+                    Utils.parse(
+                            "<hover:show_text:'<yellow>PVP "+(PVPManager.isPvpEnabled(u)?"<aqua>Enabled</aqua>":"<green>Disabled</green>")+" for "+name+"</yellow>'>"+
+                            "<blue>PVP "+locked+" for "+target.getName()+
+                                    ".</blue>"), true, false);
+        }, Utils.offlinePlayerArgument("player"));
+    }
+}
+class PVPLockStatusCommand extends Command {
+    public void register(final CommandDetails details) {
+        details.registerCommand((s,args)->{
+            OfflinePlayer target = (OfflinePlayer) args[0];
+            UUID u = target.getUniqueId();
+            String name = target.getName();
+            String locked = PVPManager.isLocked(u)?"locked":"unlocked";
+            Utils.send(s,
+                    Utils.parse("<hover:show_text:'<yellow>PVP "+(PVPManager.isPvpEnabled(u)?"<aqua>Enabled</aqua>":"<green>Disabled</green>")+" for "+name+"</yellow>'><blue>"+name+" has PVP "+locked+".</blue></hover>"), true, false);
+        }, Utils.offlinePlayerArgument("player"));
     }
 }
 class HelpCommand extends Command {
@@ -269,7 +318,7 @@ class PermsCommand extends Command {
 class ReloadCommand extends Command {
     public void register(final CommandDetails details) {
         details.registerCommand((sender, args) -> {
-            PPVPPlugin.inst().reloadConfig();
+            PPVPPlugin.inst().reloadConfigs();
             Utils.send(sender, Utils.parse("<green>PVP Config Reloaded."), true, false);
         });
     }
@@ -284,18 +333,18 @@ class UpdateCommand extends Command {
     public void register(final CommandDetails details) {
         details.registerCommand((s, args) -> {
             final PPVPPlugin pl = PPVPPlugin.inst();
-            if(pl.config_version() >= PPVPPlugin.CONFIG_VERSION){
+            if(Config.version() >= Config.CONFIG_VERSION){
                 CommandAPI.fail("No configuration update was found.");
                 return;
             }
-            double oldVer = pl.config_version();
+            double oldVer = Config.version();
             File old = new File(pl.getDataFolder(),"old_config.yml");
             if(old.exists()) CommandAPI.fail("Update failed! Delete the existing old_config.yml and try again.");
             File oldConfig = new File(pl.getDataFolder(),"config.yml");
             oldConfig.renameTo(old);
             pl.saveResource("config.yml", true);
             pl.reloadConfig();
-            Utils.send(s, Utils.parse("<hover:show_text:'<gradient:green:aqua>PersonalPvP</gradient>\n<bold><gold>You can now transfer previous settings from <gray>old_config.yml</gray> to <gray>config.yml</gray> and <yellow><italic>reload</italic></yellow>.</gold>\nRemember to delete <gray>old_config.yml</gray> when done.</bold>\n<blue>[<gray>v</gray><red>"+oldVer+"</red> -> <green>"+pl.config_version()+"</green>]</blue>'><green>Config updated and reloaded! <gray>Hover for further instructions.</hover>"), true, false);
+            Utils.send(s, Utils.parse("<hover:show_text:'<gradient:green:aqua>PersonalPvP</gradient>\n<bold><gold>You can now transfer previous settings from <gray>old_config.yml</gray> to <gray>config.yml</gray> and <yellow><italic>reload</italic></yellow>.</gold>\nRemember to delete <gray>old_config.yml</gray> when done.</bold>\n<blue>[<gray>v</gray><red>"+oldVer+"</red> -> <green>"+Config.version()+"</green>]</blue>'><green>Config updated and reloaded! <gray>Hover for further instructions.</hover>"), true, false);
         });
     }
 }
