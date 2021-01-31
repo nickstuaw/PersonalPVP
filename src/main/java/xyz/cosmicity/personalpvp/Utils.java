@@ -30,12 +30,25 @@ public class Utils {
     }
 
     public static void send(final CommandSender sender, final Component component, final boolean text, final boolean actionbar) {
-        if (text) {
-            BukkitAudiences.create(pl).sender(sender).sendMessage(component);
+        if(sender instanceof Player) {
+            Audience a = BukkitAudiences.create(pl).player((Player)sender);
+            if (text) {
+                a.sendMessage(component);
+            }
+            if (actionbar) {
+                a.sendActionBar(component);
+            }
+        } else {
+            if (text) {
+                BukkitAudiences.create(pl).sender(sender).sendMessage(component);
+            }
+            if (actionbar) {
+                BukkitAudiences.create(pl).sender(sender).sendActionBar(component);
+            }
         }
-        if (actionbar) {
-            BukkitAudiences.create(pl).sender(sender).sendActionBar(component);
-        }
+    }
+    public static void sendText(final Player player, final Component component) {
+        BukkitAudiences.create(pl).player(player).sendMessage(component);
     }
     public static void send(final Message message, final Player player) {
         Audience audience = BukkitAudiences.create(pl).player(player);

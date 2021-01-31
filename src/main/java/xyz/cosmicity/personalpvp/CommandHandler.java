@@ -2,10 +2,9 @@ package xyz.cosmicity.personalpvp;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandPermission;
-import dev.jorel.commandapi.arguments.EntitySelectorArgument;
-import dev.jorel.commandapi.arguments.PlayerArgument;
-import dev.jorel.commandapi.arguments.TextArgument;
+import dev.jorel.commandapi.arguments.*;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.wrappers.IntegerRange;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -73,11 +72,7 @@ public class CommandHandler {
         setup(details,new HelpCommand());
         section = commandsConfig.getConfigurationSection("commands.perms");
         details = new CommandDetails(section);
-        if(details.isOn()) {
-            commands.add(details);
-            permissions().addAll(commands.stream().map(CommandDetails::permission).map(CommandPermission::toString).collect(Collectors.toList()));
-            new PermsCommand().register(details);
-        }
+        setup(details, new PermsCommand());
     }
     public static List<CommandDetails> commands() {return commands;}
     public static List<String> permissions() {return permissions;}
@@ -85,6 +80,7 @@ public class CommandHandler {
     public void setup(final CommandDetails d, final Command c) {
         if(d.isOn()) {
             commands.add(d);
+            permissions.add(d.permission().toString());
             c.register(d);
         }
     }
@@ -275,22 +271,35 @@ class PVPLockStatusCommand extends Command {
     }
 }
 class HelpCommand extends Command {
-    private final String title = "<gradient:green:aqua>- - - -</gradient> <white><hover:show_text:'"+ PPVPPlugin.VERSION +"'>PersonalPVP</hover> <bold>Help</bold> <gradient:aqua:green>- - - -</gradient>";
-    private final String consoleTitle = "\n<yellow>- - - - <white>PersonalPVP Help</white> - - - -</yellow>";
     public void register(final CommandDetails details) {
         details.registerCommand((s, args) -> {
-            Stream<CommandDetails> commandStream = CommandHandler.commands().stream().filter(details1 -> s.hasPermission(details1.permission().toString()));
-            if(s instanceof Player) {
-                Utils.send(s, Utils.parse(
-                        this.title + "\n"
-                                + commandStream
-                                .map(this::getLine).collect(Collectors.joining("\n")) +
-                                "\n" + this.title
-                ), true, false);return;
-            }
-            Utils.send(Utils.parse(this.consoleTitle+"\n"+commandStream
-                    .map(this::getConsoleLine).collect(Collectors.joining("\n"))+consoleTitle));
+            Bukkit.getServer().dispatchCommand(s, details.label()+" 1");
         });
+        details.registerCommand((s, args) -> {
+            int pg = 1, max = 3;
+            if((int)args[0]<=max&&(int)args[0]>0) {
+                pg = ((int)args[0]);
+            }
+            String title = "<gradient:green:aqua>- - - -</gradient> <white><hover:show_text:'"+ PPVPPlugin.VERSION +"'>PersonalPVP</hover> <bold>Help Page "+pg+"/"+max+"</bold> <gradient:aqua:green>- - - -</gradient>",
+                    consoleTitle = "\n<yellow>- - - - <white>PersonalPVP Help</white> - - - -</yellow>";
+            List<CommandDetails> cmdDetailList = CommandHandler.commands().stream().filter(details1 -> s.hasPermission(details1.permission().toString()))
+                    .collect(Collectors.toList());
+            List<String> cmdList = cmdDetailList.stream().map(this::getLine).collect(Collectors.toList());
+            List<String> consoleList = cmdDetailList.stream().map(this::getConsoleLine).collect(Collectors.toList());
+            int size = cmdList.size();
+            int pgSize = (int)(size % Math.ceil(size/2f));
+            if(((max-1)*pgSize)-size<pgSize && pg == max) {
+                cmdList = cmdList.subList(size-(size%((max-1)*pgSize)),size);
+            } else
+                cmdList = cmdList.subList((((pg-1)*(pgSize))>size)?size-1-(size%(pgSize)):(pg-1)*pgSize,(pg*pgSize>size)?size-1:pg*pgSize);
+            if(s instanceof Player) {
+                Utils.sendText((Player)s, Utils.parse(
+                        title + "\n"+ String.join("\n",cmdList) + "\n" + title
+                ));
+                return;
+            }
+            Utils.send(Utils.parse(consoleTitle+"\n"+ String.join("\n",consoleList) +consoleTitle));
+        }, new IntegerArgument("page").overrideSuggestions("1","2"));
     }
 
     public String getLine(final CommandDetails details) {
@@ -301,15 +310,15 @@ class HelpCommand extends Command {
     }
 }
 class PermsCommand extends Command {
-    private final String title = "<gradient:green:aqua>- - - -</gradient> <white><hover:show_text:'"+ PPVPPlugin.VERSION +"'>PersonalPVP</hover> <bold>Permissions</bold> <gradient:aqua:green>- - - -</gradient>";
+    private final String title = "<reset><gradient:green:aqua>- - - -</gradient> <white><hover:show_text:'"+ PPVPPlugin.VERSION +"'>PersonalPVP</hover> <bold>Permissions</bold> <gradient:aqua:green>- - - -</gradient>";
     private final String consoleTitle = "\n<yellow>- - - - <white>PersonalPVP Permissions</white> - - - -";
     public void register(final CommandDetails details) {
         List<String> permissionStrings = CommandHandler.permissions(), permissions = new ArrayList<>();
-        permissionStrings.forEach(permission -> permissions.add("\n<gray>• </gray><color:#72a6cc><italic><hover:show_text:'<gradient:#437da8:#3378ab>Click to copy "+permission+"</gradient>'><click:copy_to_clipboard:"+permission+">"+permission+"</click></hover></italic></color:#72a6cc>"));
+        permissionStrings.forEach(permission -> permissions.add("\n<gray>• <color:#72a6cc><italic><hover:show_text:'<gradient:#437da8:#3378ab>Click to copy "+permission+"'><click:copy_to_clipboard:"+permission+">"+permission+"</click></hover>"));
         details.registerCommand((s, args) -> {
-            if(s instanceof Player) Utils.send(s, Utils.parse(
-                    this.title+"\n<gray>• <hover:show_text:'<gradient:#437da8:#3378ab>Copy all</gradient>'><click:copy_to_clipboard:"+String.join(",", CommandHandler.permissions())+">Click to copy all.</gray></click></hover>"
-                            +String.join("",permissions) + "\n"+this.title),true,false);
+            if(s instanceof Player)
+                Utils.sendText((Player)s, Utils.parse(
+                    this.title+"\n<gray>• <hover:show_text:'<gradient:#437da8:#3378ab>Copy all</gradient>'><click:copy_to_clipboard:"+String.join(",", CommandHandler.permissions())+">Click to copy all.</gray></click></hover>" +String.join("",permissions) + "\n"+this.title));
             else Utils.send(Utils.parse(this.consoleTitle+"\n"+String.join(",", CommandHandler.permissions())+this.consoleTitle));
         });
     }
