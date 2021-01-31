@@ -3,7 +3,6 @@ package xyz.cosmicity.personalpvp;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.yaml.snakeyaml.Yaml;
 import xyz.cosmicity.personalpvp.storage.Message;
 
 import java.util.List;

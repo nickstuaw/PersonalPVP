@@ -12,10 +12,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.yaml.snakeyaml.Yaml;
+import xyz.cosmicity.personalpvp.managers.PVPManager;
 import xyz.cosmicity.personalpvp.storage.Command;
 import xyz.cosmicity.personalpvp.storage.CommandDetails;
-import xyz.cosmicity.personalpvp.managers.PVPManager;
 
 import java.io.File;
 import java.util.*;

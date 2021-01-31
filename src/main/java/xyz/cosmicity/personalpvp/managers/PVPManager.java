@@ -2,7 +2,6 @@ package xyz.cosmicity.personalpvp.managers;
 
 import org.bukkit.entity.Player;
 import xyz.cosmicity.personalpvp.Config;
-import xyz.cosmicity.personalpvp.PPVPPlugin;
 import xyz.cosmicity.personalpvp.Utils;
 
 import java.util.*;
