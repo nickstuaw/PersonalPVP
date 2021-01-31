@@ -3,6 +3,8 @@
 A Minecraft plugin that provides a PVP option for each player. PersonalPVP provides a many useful options for this
 that can be viewed in [config.yml](/src/main/resources/config.yml).
 <br>When a player has PVP disabled, they cannot attack or be attacked by other players despite their PVP statuses.
+<br>The PVP status of each player can be locked by admins with the `personalpvp.lock` permission by default.
+<br>Locking a player's status prevents the player from successfully toggling their PVP status while locked.
 
 ### Useful links:
 - [Commands and Permissions](https://github.com/Nebula-O/PersonalPVP/wiki/Commands-and-Permissions)
