@@ -6,6 +6,8 @@ that can be viewed in [config.yml](/src/main/resources/config.yml).
 <br>The PVP status of each player can be locked by admins with the `personalpvp.lock` permission by default.
 <br>Locking a player's status prevents the player from successfully toggling their PVP status while locked.
 
+[<img src="https://raw.githubusercontent.com/Nebula-O/images/main/banner.png?token=ARDWZIWPNH6WYPEZXVX7LA3AC7X64">](https://discord.gg/JjWDdNdK5F)
+
 ### Useful links:
 - [Commands and Permissions](https://github.com/Nebula-O/PersonalPVP/wiki/Commands-and-Permissions)
 - [Discord Server](https://discord.gg/JjWDdNdK5F)
