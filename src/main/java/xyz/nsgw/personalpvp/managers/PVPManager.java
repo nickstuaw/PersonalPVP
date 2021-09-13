@@ -1,8 +1,9 @@
-package xyz.cosmicity.personalpvp.managers;
+package xyz.nsgw.personalpvp.managers;
 
 import org.bukkit.entity.Player;
-import xyz.cosmicity.personalpvp.Config;
-import xyz.cosmicity.personalpvp.Utils;
+import xyz.nsgw.personalpvp.PPVPPlugin;
+import xyz.nsgw.personalpvp.Utils;
+import xyz.nsgw.personalpvp.config.GeneralConfig;
 
 import java.util.*;
 
@@ -17,10 +18,10 @@ public class PVPManager {
     public static List<UUID> lockedPlayers() {return lockedPlayers;}
 
     public static boolean pvpPositive(final UUID uuid) {
-        return Config.default_pvp_status() != players.contains(uuid);
+        return PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.DEFAULT_PVP_STATUS) != players.contains(uuid);
     }
     public static boolean pvpNegative(final UUID uuid) {
-        return Config.default_pvp_status() == players.contains(uuid);
+        return PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.DEFAULT_PVP_STATUS) == players.contains(uuid);
     }
     public static boolean isLocked(final UUID uuid) {
         return lockedPlayers.contains(uuid);
@@ -36,48 +37,48 @@ public class PVPManager {
     }
 
     public static void reset(final UUID uuid) {
-        if(pvpPositive(uuid) != Config.default_pvp_status()) toggle(uuid);
+        if(pvpPositive(uuid) != PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.DEFAULT_PVP_STATUS)) toggle(uuid);
     }
 
     public static boolean toggle(final UUID uuid) {
         boolean c = players.contains(uuid);
         if(c) players.remove(uuid);
         else players.add(uuid);
-        return Config.default_pvp_status() == c;
+        return PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.DEFAULT_PVP_STATUS) == c;
     }
 
     public static boolean isPvpEnabled(final UUID uuid) {
-        return Config.default_pvp_status() != players.contains(uuid);
+        return PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.DEFAULT_PVP_STATUS) != players.contains(uuid);
     }
     public static boolean isPvpDisabled(final UUID uuid) {
-        return Config.default_pvp_status() == players.contains(uuid);
+        return PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.DEFAULT_PVP_STATUS) == players.contains(uuid);
     }
     public static boolean isEitherNegative(final UUID u1, final UUID u2) {
         return pvpNegative(u1)||pvpNegative(u2);
     }
 
     public static void load() {
-        if(!Config.rs_pvp_on_quit() && Utils.loaded().get(0) != null) players = Utils.loaded().get(0);
-        if(!Config.rs_locks_on_quit() && Config.use_locking()) lockedPlayers = Utils.loaded().get(2);
+        if(!PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.RESET_PVP_ON_QUIT) && Utils.loaded().get(0) != null) players = Utils.loaded().get(0);
+        if(!PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.DO_STATUS_LOCKS_RESET_ON_QUIT) && PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.IS_STATUS_LOCKING)) lockedPlayers = Utils.loaded().get(2);
     }
 
     public static void coolDown(final Player p){
-        if(p.hasPermission(Config.commands().getString("pvp.permission")+".bypass")) return;
+        if(p.hasPermission("pvp.cooldown.bypass")) return;
         cooldowns.put(p.getUniqueId(), new Date().getTime());
     }
 
     public static boolean coolingDown(final Player p) {
-        if(p.hasPermission(Config.commands().getString("pvp.permission")+".bypass")) return false;
+        if(p.hasPermission("pvp.cooldown.bypass")) return false;
         UUID uuid = p.getUniqueId();
         if(!cooldowns.containsKey(uuid)) return false;
         if(getRemainingSeconds(uuid)<=0) {
             cooldowns.remove(uuid);
             return false;
         }
-        return (new Date().getTime()-cooldowns.get(uuid))> Config.pvp_cooldown();
+        return (new Date().getTime()-cooldowns.get(uuid))> PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPTOGGLE_COOLDOWN);
     }
     public static int getRemainingSeconds(final UUID uuid) {
-        return (int) Math.ceil(Double.parseDouble(Long.toString(((Config.pvp_cooldown()* 1000L)-(new Date().getTime()-cooldowns.get(uuid)))/1000)));
+        return (int) Math.ceil(Double.parseDouble(Long.toString(((PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPTOGGLE_COOLDOWN) * 1000L)-(new Date().getTime()-cooldowns.get(uuid)))/1000)));
     }
 
 }

@@ -1,10 +1,10 @@
-package xyz.cosmicity.personalpvp.managers;
+package xyz.nsgw.personalpvp.managers;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
-import xyz.cosmicity.personalpvp.Config;
-import xyz.cosmicity.personalpvp.PPVPPlugin;
-import xyz.cosmicity.personalpvp.Utils;
-import xyz.cosmicity.personalpvp.storage.Message;
+import xyz.nsgw.personalpvp.PPVPPlugin;
+import xyz.nsgw.personalpvp.Utils;
+import xyz.nsgw.personalpvp.config.GeneralConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +34,9 @@ public class TaskManager {
 
     public static void start() {
         actionbarTask = PPVPPlugin.inst().getServer().getScheduler().scheduleSyncRepeatingTask(PPVPPlugin.inst(), () -> {
-            String actionbarMessage = Config.actionbar_message();
+            String actionbarMessage = PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_MESSAGE);
             if (actionbarMessage.contains("<worldtime>")) {
-                int time = (int) (Bukkit.getWorld(Config.worldtime_in_world()).getTime()) + 6000, tmpHours, tmpMinutes;
+                int time = (int) (Bukkit.getWorld(PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_TIME_WORLD)).getTime()) + 6000, tmpHours, tmpMinutes;
                 final String sfx = (24000 <= time && time <= 30000) || time <= 12000 ? "am" : "pm";
                 tmpHours = (int) (time / 1000f) - 12;
                 tmpHours += tmpHours < 1 ? 12 : (tmpHours > 12 ? -12 : 0);
@@ -52,10 +52,10 @@ public class TaskManager {
     }
 
     public static boolean ignoredPositive(final UUID u) {
-        return Config.default_actionbar_status() == ignoredValues.contains(u);
+        return PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_DEFAULT_VISIBILITY) == ignoredValues.contains(u);
     }
     public static boolean ignoredNegative(final UUID u) {
-        return Config.default_actionbar_status() != ignoredValues.contains(u);
+        return PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_DEFAULT_VISIBILITY) != ignoredValues.contains(u);
     }
 
     public static void sendUpdate(final UUID u, final PPVPPlugin pl) {
@@ -65,41 +65,54 @@ public class TaskManager {
     }
 
     public static void sendInstantUpdate(final UUID u) {
-        Utils.send(Bukkit.getPlayer(u), Utils.parse(Config.actionbar_message(),
+        Utils.send(Bukkit.getPlayer(u),
+                Utils.parse(PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_MESSAGE),
                 "pvpprefix",
-                Config.actionbar_pvp_prefixes()[PVPManager.pvpPositive(u) ? 0 : 1],
+                PVPManager.pvpPositive(u) ?
+                        PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED_PFX) :
+                        PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED_PFX),
                 "pvpstatus",
-                Config.actionbar_pvp_statuses()[PVPManager.pvpPositive(u) ? 0 : 1],
+                PVPManager.pvpPositive(u) ?
+                        PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED) :
+                        PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED),
                 "worldtime", (hours<10?"0":"")+hours+":"+(minutes<10?"0":"")+minutes+suffix),
                 false, true);
     }
-    public static void sendInstantUpdate(final UUID u, final Message msg) {
-        Utils.send(msg.parse("pvpprefix",Config.actionbar_pvp_prefixes()[PVPManager.pvpPositive(u) ? 0 : 1],
-                "pvpstatus",Config.actionbar_pvp_statuses()[PVPManager.pvpPositive(u) ? 0 : 1],
-                "worldtime", (hours<10?"0":"")+hours+":"+(minutes<10?"0":"")+minutes+suffix),Bukkit.getPlayer(u));
+    public static void sendInstantUpdate(final UUID u, final String msg) {
+        Utils.sendText(Bukkit.getPlayer(u), MiniMessage.get().parse(msg,"pvpprefix",
+                PVPManager.pvpPositive(u) ?
+                        PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED_PFX) :
+                        PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED_PFX),
+                "pvpstatus", PVPManager.pvpPositive(u) ?
+                        PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED) :
+                        PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED),
+                "worldtime", (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + suffix));
     }
 
     public static boolean toggleHidden(final UUID uuid) {
         boolean c = ignoredValues.contains(uuid);
         if(c) ignoredValues.remove(uuid);
         else ignoredValues.add(uuid);
-        return Config.default_actionbar_status() == c;
+        return PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_DEFAULT_VISIBILITY) == c;
     }
 
     public static void sendJoinDuration(final UUID u, final PPVPPlugin pl) {
-        for(int i=0;i<Config.actionbar_login_duration()+1;i++) {
+        for(int i=0;i<PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_LOGIN_VISIBILITY_DURATION)+1;i++) {
             pl.getServer().getScheduler().scheduleSyncDelayedTask(pl, () -> TaskManager.sendInstantUpdate(u), i * 20L);
         }
     }
 
     public static void blockedAttack(final UUID... us) {
-        if(Config.actionbar_attack_duration()<1) return;
+        if(PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_ATTACK_VISIBILITY_DURATION)<1) return;
         PPVPPlugin pl = PPVPPlugin.inst();
-        Message reminder = Config.pvp_on_reminder();
         for(UUID u : us) {
             if (ignoredPositive(u) && !PVPManager.isPvpEnabled(u)) {
-                for (int i = 0; i < Config.actionbar_attack_duration()+1; i++) {
-                    pl.getServer().getScheduler().scheduleSyncDelayedTask(pl, () -> TaskManager.sendInstantUpdate(u, reminder), i * 20L);
+                for (int i = 0;
+                     i < PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_ATTACK_VISIBILITY_DURATION)+1;
+                     i++) {
+                    pl.getServer().getScheduler().scheduleSyncDelayedTask(pl, () ->
+                            TaskManager.sendInstantUpdate(u, "<#ed4213>Use <red><bold>/pvp<#ed4213> to " +
+                                    "enable pvp."), i * 20L);
                 }
             }
         }

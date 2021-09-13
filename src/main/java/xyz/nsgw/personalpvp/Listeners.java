@@ -1,4 +1,4 @@
-package xyz.cosmicity.personalpvp;
+package xyz.nsgw.personalpvp;
 
 import org.bukkit.GameMode;
 import org.bukkit.enchantments.Enchantment;
@@ -16,8 +16,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.jetbrains.annotations.NotNull;
-import xyz.cosmicity.personalpvp.managers.PVPManager;
-import xyz.cosmicity.personalpvp.managers.TaskManager;
+import xyz.nsgw.personalpvp.config.GeneralConfig;
+import xyz.nsgw.personalpvp.managers.PVPManager;
+import xyz.nsgw.personalpvp.managers.TaskManager;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -26,22 +27,22 @@ import java.util.stream.Stream;
 public class Listeners implements Listener {
 
     public Listeners(final PPVPPlugin pl) {
-        if(Config.prevent_player_damage()) {
+        if(pl.conf().get().getProperty(GeneralConfig.PREVENT_PLAYERDAMAGE)) {
             pl.getServer().getPluginManager().registerEvents(new DamageByEntityListener(), pl);
         }
-        if(Config.prevent_fishing_rods()) {
+        if(pl.conf().get().getProperty(GeneralConfig.PREVENT_RODS)) {
             pl.getServer().getPluginManager().registerEvents(new FishingListener(), pl);
         }
-        if(Config.prevent_projectiles()) {
+        if(pl.conf().get().getProperty(GeneralConfig.PREVENT_PROJECTILES)) {
             pl.getServer().getPluginManager().registerEvents(new ProjectileListener(), pl);
         }
-        if(Config.prevent_potions()) {
+        if(pl.conf().get().getProperty(GeneralConfig.PREVENT_POTS)) {
             pl.getServer().getPluginManager().registerEvents(new PotionListener(), pl);
         }
-        if(Config.prevent_combustion()) {
+        if(pl.conf().get().getProperty(GeneralConfig.PREVENT_FIRE)) {
             pl.getServer().getPluginManager().registerEvents(new CombustionListener(), pl);
         }
-        if(Config.enable_toggleable_actionbar()) {
+        if(pl.conf().get().getProperty(GeneralConfig.ABAR_ENABLE)) {
             pl.getServer().getPluginManager().registerEvents(this, pl);
         }
         pl.getServer().getPluginManager().registerEvents(new DeathListener(), pl);
@@ -50,7 +51,7 @@ public class Listeners implements Listener {
     public void onJoin(final PlayerJoinEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
         TaskManager.addUuid(uuid);
-        if(Config.actionbar_login_duration()<1 || TaskManager.ignoredNegative(uuid)) return;
+        if(PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_LOGIN_VISIBILITY_DURATION)<1 || TaskManager.ignoredNegative(uuid)) return;
         TaskManager.sendJoinDuration(uuid, PPVPPlugin.inst());
     }
     @EventHandler(priority = EventPriority.MONITOR)
@@ -69,20 +70,53 @@ class DeathListener implements Listener {
     public void onDeath(final PlayerDeathEvent e) {
         if(e.getEntity().getKiller() == null) return;
         e.getDrops().clear();
-        e.setKeepInventory(Config.keep_inv_pvp());
-        e.setKeepLevel(Config.keep_xp_pvp());
+        e.setKeepInventory(PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.KEEPINV_ON_PVP_DEATH));
+        e.setKeepLevel(PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.KEEPXP_ON_PVP_DEATH));
     }
 }
 class DamageByEntityListener implements Listener {
+    public DamageByEntityListener() {}
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onDamage(@NotNull EntityDamageByEntityEvent e) {
-        Entity entity = e.getEntity(), damager = e.getDamager();
-        if(!(entity instanceof Player) || !(damager instanceof Player)) return;
-        UUID entityUuid = entity.getUniqueId(), damagerUuid = damager.getUniqueId();
+        Entity defender = e.getEntity(), attacker = e.getDamager();
+        if(shouldTameablesCancel(attacker, defender)) {
+            e.setCancelled(true);
+            return;
+        }
+        if(!(defender instanceof Player) || !(attacker instanceof Player)) return;
+        UUID entityUuid = defender.getUniqueId(), damagerUuid = attacker.getUniqueId();
         if(PVPManager.isEitherNegative(entityUuid,damagerUuid)) {
             e.setCancelled(true);
             TaskManager.blockedAttack(entityUuid,damagerUuid);
         }
+    }
+    private boolean shouldTameablesCancel(final Entity attacker, final Entity defender) {
+        if(!PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.PREVENT_TAMEDDAMAGE)) return false;
+        if(!(attacker instanceof Tameable || defender instanceof Tameable)) return false;
+        Tameable animal;
+        if(attacker instanceof Tameable) {
+            animal = (Tameable) attacker;
+            if(animal.getOwner() == null || !(animal.getOwner() instanceof Player)) return false;
+            if(PVPManager.isPvpDisabled(animal.getOwner().getUniqueId())) return true;
+            if(defender instanceof Player) {
+                if(PVPManager.isPvpDisabled(defender.getUniqueId())) return true;
+            }
+        }
+        if(defender instanceof Tameable) {
+            animal = (Tameable) defender;
+            if(animal.getOwner()==null) return false;
+            if(!(animal.getOwner() instanceof Player)) return false;
+            if(attacker instanceof Player) {
+                if(animal.getOwner().equals(attacker)) return false;
+            }
+            return checkOwners((Tameable) defender);
+        }
+        return false;
+    }
+    private boolean checkOwners(Tameable animal) {
+        if(animal.getOwner() == null || !(animal.getOwner() instanceof Player)) return false;
+        if(PVPManager.isPvpDisabled(animal.getOwner().getUniqueId())) return true;
+        return false;
     }
 }
 class PotionListener implements Listener {

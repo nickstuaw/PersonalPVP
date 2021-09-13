@@ -1,17 +1,12 @@
-package xyz.cosmicity.personalpvp;
+package xyz.nsgw.personalpvp;
 
-import dev.jorel.commandapi.arguments.Argument;
-import dev.jorel.commandapi.arguments.CustomArgument;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import xyz.cosmicity.personalpvp.managers.PVPManager;
-import xyz.cosmicity.personalpvp.storage.Message;
+import xyz.nsgw.personalpvp.config.GeneralConfig;
+import xyz.nsgw.personalpvp.managers.PVPManager;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -30,37 +25,19 @@ public class Utils {
     }
 
     public static void send(final CommandSender sender, final Component component, final boolean text, final boolean actionbar) {
-        if(sender instanceof Player) {
-            Audience a = BukkitAudiences.create(pl).player((Player)sender);
-            if (text) {
-                a.sendMessage(component);
-            }
-            if (actionbar) {
-                a.sendActionBar(component);
-            }
-        } else {
-            if (text) {
-                BukkitAudiences.create(pl).sender(sender).sendMessage(component);
-            }
-            if (actionbar) {
-                BukkitAudiences.create(pl).sender(sender).sendActionBar(component);
-            }
+        if (text) {
+            sender.sendMessage(component);
+        }
+        if (actionbar) {
+            sender.sendActionBar(component);
         }
     }
     public static void sendText(final Player player, final Component component) {
-        BukkitAudiences.create(pl).player(player).sendMessage(component);
-    }
-    public static void send(final Message message, final Player player) {
-        Audience audience = BukkitAudiences.create(pl).player(player);
-        if(message.action) audience.sendActionBar(message.get());
-        if(message.text) audience.sendMessage(message.get());
+        player.sendMessage(component);
     }
 
     public static void send(final Component component) {
-        BukkitAudiences.create(pl).console().sendMessage(component);
-    }
-    public static void sendConsole(final Message message) {
-        BukkitAudiences.create(pl).console().sendMessage(message.get());
+        Bukkit.getConsoleSender().sendMessage(component);
     }
 
     public static Component parse(String text, final String... placeholders) {
@@ -69,7 +46,7 @@ public class Utils {
 
     public static void loadObjects() throws IOException, ClassNotFoundException {
         ObjectInputStream ois = new ObjectInputStream(
-                new FileInputStream(new File(pl.getDataFolder(),Config.data_filename())));
+                new FileInputStream(new File(pl.getDataFolder(),PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.FILE))));
         List<List<UUID>> objs = new ArrayList<>();
         try {
             Object o = ois.readObject();
@@ -99,28 +76,19 @@ public class Utils {
     }
 
     public static boolean togglePersonal(final Player p) {
-        if(Config.use_locking()) {
+        if(pl.conf().get().getProperty(GeneralConfig.IS_STATUS_LOCKING)) {
             if (PVPManager.isLocked(p.getUniqueId())) {
-                Utils.send(Config.locked_message(), p);
+                Utils.sendText(p,MiniMessage.get().parse("Oops! Your PVP status has been locked."));
                 return false;
             }
         }
         if(PVPManager.coolingDown(p)) {
             int remaining = PVPManager.getRemainingSeconds(p.getUniqueId());
-            Utils.send( Config.pvp_cooldown_prompt().parse("seconds",remaining+(remaining>1?" seconds":" second")),p);
+            Utils.sendText(p, MiniMessage.get().parse("<red>You can do that again in <yellow><bold><seconds></bold></yellow>.","<seconds>",remaining+(remaining>1?" seconds":" second")));
             return false;
         }
         PVPManager.coolDown(p);
-        Utils.send(PVPManager.toggle(p.getUniqueId()) ? Config.pvp_enabled_message() : Config.pvp_disabled_message(), p);
+        Utils.sendText(p, PVPManager.toggle(p.getUniqueId()) ? MiniMessage.get().parse("<aqua>PVP enabled.") : MiniMessage.get().parse("<green>PVP disabled."));
         return true;
-    }
-
-    public static Argument offlinePlayerArgument(final String name) {
-        return new CustomArgument<>(name, (input)->{
-            OfflinePlayer p = Bukkit.getServer().getOfflinePlayerIfCached(input);
-            if(p == null)
-                throw new CustomArgument.CustomArgumentException(input+" has never joined the server.");
-            else return p;
-        });
     }
 }
