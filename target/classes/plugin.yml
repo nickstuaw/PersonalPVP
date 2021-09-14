@@ -1,5 +1,5 @@
 name: PersonalPVP
-version: 1.3
+version: 1.4
 main: xyz.nsgw.personalpvp.PPVPPlugin
 api-version: 1.17
 authors: [ CosmicSilence ]
