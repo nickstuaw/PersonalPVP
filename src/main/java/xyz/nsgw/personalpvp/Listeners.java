@@ -154,7 +154,7 @@ class ProjectileListener implements Listener {
                 !(e.getHitEntity() instanceof Player)) return;
         Player shooter = (Player) projectile.getShooter();
         UUID shooterUuid = shooter.getUniqueId(), entityUuid = e.getHitEntity().getUniqueId();
-        if(PVPManager.isEitherNegative(shooterUuid,entityUuid)) {
+        if(PVPManager.isEitherNegative(shooterUuid,entityUuid) && !((projectile instanceof Snowball) || projectile instanceof Egg)) {
             e.setCancelled(true);
             TaskManager.blockedAttack(shooterUuid,entityUuid);
             if((shooter).getGameMode().equals(GameMode.CREATIVE)) return;
