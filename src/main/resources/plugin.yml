@@ -8,27 +8,74 @@ softdepend: [PlaceholderAPI]
 permissions:
   personalpvp.player:
     children:
-      - personalpvp.help
       - personalpvp.togglepvp
       - personalpvp.pvpcontrol
       - personalpvp.toggleactionbar
     default: not op
     description: All default permissions.
+  personalpvp.togglepvp.*:
+    children:
+      - personalpvp.togglepvp
+      - personalpvp.togglepvp.other
+      - personalpvp.togglepvp.bypass
+    default: op
+    description: All toggle-pvp permissions.
+  personalpvp.pvpcontrol.*:
+    children:
+      - personalpvp.pvpcontrol
+      - personalpvp.pvpcontrol.admin
+      - personalpvp.pvpcontrol.resetglobal
+      - personalpvp.pvpcontrol.other
+      - personalpvp.pvpcontrol.other.status
+      - personalpvp.pvpcontrol.other.toggle
+      - personalpvp.pvpcontrol.other.reset
+      - personalpvp.pvpcontrol.other.enable
+      - personalpvp.pvpcontrol.other.disable
+    default: op
+    description: All /pvp control permissions.
+  personalpvp.pvpcontrol.other.*:
+    children:
+      - personalpvp.pvpcontrol.other
+      - personalpvp.pvpcontrol.other.status
+      - personalpvp.pvpcontrol.other.toggle
+      - personalpvp.pvpcontrol.other.reset
+      - personalpvp.pvpcontrol.other.enable
+      - personalpvp.pvpcontrol.other.disable
+    default: op
+    description: All /pvp control other permissions.
+  personalpvp.lock.*:
+    children:
+      - personalpvp.lock
+      - personalpvp.lock.status
+      - personalpvp.lock.toggle
+      - personalpvp.lock.toggleoffline
+    default: op
+    description: All toggle-pvp permissions.
   personalpvp.admin:
     default: op
     description: Complete set of PVP permissions.
     children:
-    - personalpvp.reload
-    - personalpvp.update
-    - personalpvp.togglepvp
-    - personalpvp.togglepvp.other
-    - personalpvp.togglepvp.bypass
-    - personalpvp.toggleactionbar
-    - personalpvp.pvpcontrol
-    - personalpvp.pvpcontrol.admin
-    - personalpvp.pvpother
-    - personalpvp.resetplayer
-    - personalpvp.lock
-    - personalpvp.listpvp
-    - personalpvp.help
-    - personalpvp.listpermissions
+      - personalpvp.reload
+      - personalpvp.update
+      - personalpvp.togglepvp
+      - personalpvp.togglepvp.other
+      - personalpvp.togglepvp.bypass
+      - personalpvp.toggleactionbar
+      - personalpvp.pvpcontrol
+      - personalpvp.pvpcontrol.admin
+      - personalpvp.pvpcontrol.resetglobal
+      - personalpvp.pvpcontrol.other
+      - personalpvp.pvpcontrol.other.status
+      - personalpvp.pvpcontrol.other.toggle
+      - personalpvp.pvpcontrol.other.reset
+      - personalpvp.pvpcontrol.other.enable
+      - personalpvp.pvpcontrol.other.disable
+      - personalpvp.pvpother
+      - personalpvp.resetplayer
+      - personalpvp.lock
+      - personalpvp.lock.status
+      - personalpvp.lock.toggle
+      - personalpvp.lock.toggleoffline
+      - personalpvp.listpvp
+      - personalpvp.help
+      - personalpvp.listpermissions

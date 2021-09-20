@@ -45,6 +45,7 @@ public class CommandHandler {
 class PVPCommand extends BaseCommand {
 
     @Default
+    @CommandPermission("personalpvp.togglepvp")
     public void onPvp(Player p) {
         if(Utils.togglePersonal(p)) notifyConsole( PVPManager.isPvpEnabled(p.getUniqueId()), p);
     }
@@ -54,21 +55,20 @@ class PVPCommand extends BaseCommand {
     }
 
     @Subcommand("control")
+    @CommandPermission("personalpvp.pvpcontrol")
     public class onPvpCtrlr extends BaseCommand {
         private final String title = "<gradient:green:aqua>- - - -</gradient> <white><bold>PVP Control</bold> <gradient:aqua:green>- - - -</gradient>";
 
         @Default
         public void onControl(final CommandSender s) {
             if(s instanceof Player) {
-                Utils.send(s, Utils.parse((Player) s, this.title + "\n" + PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPCTRL_PERSONAL_LINES) + (s.hasPermission("personalpvp.control.admin") ? "\n<green><underlined>Admin</underlined>\n" + PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPCTRL_LINES) + "\n" : "\n") + this.title), true, false);
+                Utils.send(s, Utils.parse((Player) s, this.title + "\n" + PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPCTRL_PERSONAL_LINES) + (s.hasPermission("personalpvp.pvpcontrol.admin") ? "\n<green><underlined>Admin</underlined>\n" + PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPCTRL_LINES) + "\n" : "\n") + this.title), true, false);
             }
         }
 
         @Subcommand("resetglobal")
+        @CommandPermission("personalpvp.pvpcontrol.resetglobal")
         public void onGlobalReset(final CommandSender s) {
-            if (!s.hasPermission("personalpvp.control.admin")) {
-                throw new InvalidCommandArgument("Operation not found.");
-            }
             PVPManager.players().forEach(PVPManager::remove);
             Utils.send(s, Utils.parse("<yellow>You <hover:show_text:'" + (PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.DEFAULT_PVP_STATUS) ? "<aqua>ENABLED" : "<green>DISABLED") + "'>reset</hover> PVP <hover:show_text:'Including offline players.'>for every player</hover>."), true, false);
         }
@@ -89,6 +89,7 @@ class PVPCommand extends BaseCommand {
     }
 
     @Subcommand("list")
+    @CommandPermission("personalpvp.listpvp")
     public void onList(final CommandSender s) {
         List<String> list = PVPManager.players().stream()
             .filter(PVPManager::pvpPositive)
@@ -103,14 +104,16 @@ class PVPCommand extends BaseCommand {
     }
 
     @Subcommand("other")
-    @CommandPermission("personalpvp.control.other")
+    @CommandPermission("personalpvp.pvpcontrol.other")
     public class onOther extends BaseCommand {
 
         @Subcommand("status")
+        @CommandPermission("personalpvp.pvpcontrol.other.status")
         public void onStatus(final CommandSender s, final Player target) {
             Utils.send(s, Utils.parse("<yellow>"+target.getDisplayName()+" has PVP " + (PVPManager.pvpPositive(target.getUniqueId()) ? "<aqua>ENABLED." : "<green>DISABLED.")), true, false);
         }
         @Subcommand("toggle")
+        @CommandPermission("personalpvp.pvpcontrol.other.toggle")
         public void onToggle(final CommandSender s, final Player target) {
             PVPManager.toggle(target.getUniqueId());
             String msg = "<gray>toggled</gray><yellow> PVP for "+target.getName()+".</yellow>";
@@ -118,6 +121,7 @@ class PVPCommand extends BaseCommand {
             notifyConsole("<yellow>"+s.getName()+"</yellow> "+msg);
         }
         @Subcommand("reset")
+        @CommandPermission("personalpvp.pvpcontrol.other.reset")
         public void onReset(final CommandSender s, final Player target) {
             PVPManager.remove(target.getUniqueId());
             String msg = (PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.DEFAULT_PVP_STATUS)?"<aqua>enabled</aqua>":"<green>disabled</green>")+"<yellow> PVP for "+target.getName()+".</yellow>";
@@ -125,6 +129,7 @@ class PVPCommand extends BaseCommand {
             notifyConsole("<yellow>"+s.getName()+"</yellow> "+msg);
         }
         @Subcommand("enable")
+        @CommandPermission("personalpvp.pvpcontrol.other.enable")
         public void onEnable(final CommandSender s, final Player target) {
             if(PVPManager.isPvpDisabled(target.getUniqueId())) {
                 PVPManager.toggle(target.getUniqueId());
@@ -134,6 +139,7 @@ class PVPCommand extends BaseCommand {
             }
         }
         @Subcommand("disable")
+        @CommandPermission("personalpvp.pvpcontrol.other.disable")
         public void onDisable(final CommandSender s, final Player target) {
             if(PVPManager.isPvpEnabled(target.getUniqueId())) {
                 PVPManager.toggle(target.getUniqueId());
@@ -149,15 +155,18 @@ class PVPCommand extends BaseCommand {
     }
 
     @Subcommand("reset")
+    @CommandPermission("personalpvp.resetplayer")
     @CommandCompletion("players")
     public void onReset(final Player p) {
         PVPManager.remove(p.getUniqueId());
         Utils.send(p, Utils.parse(PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.DEFAULT_PVP_STATUS)?"<aqua>":"<green>"+"You reset your PVP status."), true, false);
     }
     @Subcommand("lock")
+    @CommandPermission("personalpvp.lock")
     public class onLock extends BaseCommand {
 
         @Subcommand("toggle")
+        @CommandPermission("personalpvp.lock.toggle")
         @CommandCompletion("@players")
         public void onToggle(final CommandSender s, final Player target) {UUID u = target.getUniqueId();
             String name = target.getName();
@@ -170,6 +179,7 @@ class PVPCommand extends BaseCommand {
         }
 
         @Subcommand("toggleoffline")
+        @CommandPermission("personalpvp.lock.toggleoffline")
         @CommandCompletion("@nothing")
         public void onOfflineToggle(final CommandSender s, final OfflinePlayer target) {
             UUID u = target.getUniqueId();
@@ -183,6 +193,7 @@ class PVPCommand extends BaseCommand {
         }
 
         @Subcommand("status")
+        @CommandPermission("personalpvp.lock.status")
         @CommandCompletion("@players")
         public void onStatus(final CommandSender s, final Player target) {
             UUID u = target.getUniqueId();
@@ -193,11 +204,13 @@ class PVPCommand extends BaseCommand {
         }
     }
     @Subcommand("reload")
+    @CommandPermission("personalpvp.reload")
     public void onReload(final CommandSender s) {
         PPVPPlugin.inst().reloadConfigs();
         Utils.send(s, Utils.parse("<green>PVP Config Reloaded."), true, false);
     }
     @Subcommand("togglebar")
+    @CommandPermission("personalpvp.toggleactionbar")
     public void onToggleBar(final Player p) {
         Utils.send(p, Utils.parse(PPVPPlugin.inst().toggleHiddenActionbar(p) ? "<green>Action bar enabled.":"<green>Action bar disabled."), true, false);
     }
