@@ -4,6 +4,7 @@ main: xyz.nsgw.personalpvp.PPVPPlugin
 api-version: 1.17
 authors: [ CosmicSilence ]
 website: https://github.com/Nebula-O
+softdepend: [PlaceholderAPI]
 permissions:
   personalpvp.player:
     children:

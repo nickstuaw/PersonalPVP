@@ -1,10 +1,12 @@
 package xyz.nsgw.personalpvp;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 import xyz.nsgw.personalpvp.config.GeneralConfig;
 import xyz.nsgw.personalpvp.managers.PVPManager;
 
@@ -15,6 +17,17 @@ import java.util.List;
 import java.util.UUID;
 
 public class Utils {
+
+    public static final PotionEffectType[] BAD_EFFECTS = new PotionEffectType[]{
+            PotionEffectType.BLINDNESS,
+            PotionEffectType.CONFUSION,
+            PotionEffectType.HARM,
+            PotionEffectType.HUNGER,
+            PotionEffectType.POISON,
+            PotionEffectType.SLOW,
+            PotionEffectType.SLOW_DIGGING,
+            PotionEffectType.WEAKNESS
+    };
 
     private static PPVPPlugin pl;
 
@@ -38,6 +51,13 @@ public class Utils {
 
     public static void send(final Component component) {
         Bukkit.getConsoleSender().sendMessage(component);
+    }
+
+    public static Component parse(Player p, String text, final String... placeholders) {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            PlaceholderAPI.setPlaceholders(p, text);
+        }
+        return MiniMessage.get().parse(text, placeholders);
     }
 
     public static Component parse(String text, final String... placeholders) {
@@ -78,13 +98,13 @@ public class Utils {
     public static boolean togglePersonal(final Player p) {
         if(pl.conf().get().getProperty(GeneralConfig.IS_STATUS_LOCKING)) {
             if (PVPManager.isLocked(p.getUniqueId())) {
-                Utils.sendText(p,MiniMessage.get().parse("Oops! Your PVP status has been locked."));
+                Utils.sendText(p,Utils.parse("Oops! Your PVP status has been locked."));
                 return false;
             }
         }
         if(PVPManager.coolingDown(p)) {
             int remaining = PVPManager.getRemainingSeconds(p.getUniqueId());
-            Utils.sendText(p, MiniMessage.get().parse("<red>You can do that again in <yellow><bold><seconds></bold></yellow>.","<seconds>",remaining+(remaining>1?" seconds":" second")));
+            Utils.sendText(p, Utils.parse("<red>You can do that again in <yellow><bold><seconds></bold></yellow>.","seconds",remaining+(remaining>1?" seconds":" second")));
             return false;
         }
         PVPManager.coolDown(p);

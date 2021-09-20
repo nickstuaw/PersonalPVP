@@ -1,5 +1,6 @@
 package xyz.nsgw.personalpvp;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -20,8 +21,11 @@ import xyz.nsgw.personalpvp.config.GeneralConfig;
 import xyz.nsgw.personalpvp.managers.PVPManager;
 import xyz.nsgw.personalpvp.managers.TaskManager;
 
+import java.awt.geom.Area;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Listeners implements Listener {
@@ -85,6 +89,13 @@ class DamageByEntityListener implements Listener {
         }
         if(!(defender instanceof Player) || !(attacker instanceof Player)) return;
         UUID entityUuid = defender.getUniqueId(), damagerUuid = attacker.getUniqueId();
+        if(attacker instanceof AreaEffectCloud) {
+            AreaEffectCloud cloud = (AreaEffectCloud) attacker;
+            if(cloud.getCustomEffects().stream().map(PotionEffect::getType).anyMatch(Arrays.asList(Utils.BAD_EFFECTS)::contains)) {
+                e.setCancelled(true);
+            }
+            return;
+        }
         if(PVPManager.isEitherNegative(entityUuid,damagerUuid)) {
             e.setCancelled(true);
             TaskManager.blockedAttack(entityUuid,damagerUuid);
@@ -120,22 +131,30 @@ class DamageByEntityListener implements Listener {
     }
 }
 class PotionListener implements Listener {
-    private final PotionEffectType[] BAD_EFFECTS = new PotionEffectType[]{
-            PotionEffectType.BLINDNESS,
-            PotionEffectType.CONFUSION,
-            PotionEffectType.HARM,
-            PotionEffectType.HUNGER,
-            PotionEffectType.POISON,
-            PotionEffectType.SLOW,
-            PotionEffectType.SLOW_DIGGING,
-            PotionEffectType.WEAKNESS
-    };
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onCloud(final AreaEffectCloudApplyEvent e) {
+        if(e.getAffectedEntities().stream().noneMatch(livingEntity -> livingEntity instanceof Player)) return;
+        List<UUID> list = e.getAffectedEntities().stream().filter(livingEntity -> livingEntity instanceof Player).map(LivingEntity::getUniqueId).collect(Collectors.toList());
+        if(Arrays.asList(Utils.BAD_EFFECTS).contains(e.getEntity().getBasePotionData().getType().getEffectType())) {
+            list.forEach(p -> {
+                if(PVPManager.pvpNegative(p)) {
+                    e.getAffectedEntities().remove(Bukkit.getPlayer(p));
+                }
+            });
+        }
+        if(e.getEntity().getCustomEffects().stream().map(PotionEffect::getType).noneMatch(Arrays.asList(Utils.BAD_EFFECTS)::contains)) return;
+        list.forEach(p -> {
+            if(PVPManager.pvpNegative(p)) {
+                e.getAffectedEntities().remove(Bukkit.getPlayer(p));
+            }
+        });
+    }
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onSplash(final PotionSplashEvent e){
         ProjectileSource shooter = e.getEntity().getShooter();
         if((!(shooter instanceof Player) ||
                 e.getAffectedEntities().stream().noneMatch(entity -> entity instanceof Player))) return;
-        if(e.getPotion().getEffects().stream().map(PotionEffect::getType).noneMatch(Arrays.asList(this.BAD_EFFECTS)::contains)) return;
+        if(e.getPotion().getEffects().stream().map(PotionEffect::getType).noneMatch(Arrays.asList(Utils.BAD_EFFECTS)::contains)) return;
         Stream<UUID> stream = e.getAffectedEntities().stream().filter(livingEntity -> livingEntity instanceof Player).map(LivingEntity::getUniqueId);
         if(PVPManager.pvpNegative((((Player) shooter).getUniqueId()))
                 || stream.noneMatch(PVPManager::pvpPositive)) {
@@ -144,6 +163,17 @@ class PotionListener implements Listener {
             TaskManager.blockedAttack(stream.toArray(UUID[]::new));
         }
     }
+    /*@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onLing(final LingeringPotionSplashEvent e){
+        e.getAreaEffectCloud().getBasePotionData().getType()
+        Stream<UUID> stream = e.getAffectedEntities().stream().filter(livingEntity -> livingEntity instanceof Player).map(LivingEntity::getUniqueId);
+        if(e.getEntity().getCustomEffects().stream().map(PotionEffect::getType).noneMatch(Arrays.asList(Utils.BAD_EFFECTS)::contains)) return;
+        stream.forEach(p -> {
+            if(PVPManager.pvpNegative(p)) {
+                e.getAffectedEntities().remove(Bukkit.getPlayer(p));e.
+            }
+        });
+    }*/
 }
 class ProjectileListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

@@ -6,7 +6,7 @@
 
     <groupId>xyz.nsgw</groupId>
     <artifactId>PersonalPVP</artifactId>
-    <version>1.4</version>
+    <version>1.4.2</version>
     <packaging>jar</packaging>
 
     <name>PersonalPVP</name>
@@ -93,6 +93,10 @@
             <id>aikar</id>
             <url>https://repo.aikar.co/content/groups/aikar/</url>
         </repository>
+        <repository>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -126,6 +130,12 @@
             <groupId>ch.jalu</groupId>
             <artifactId>configme</artifactId>
             <version>1.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.10.10</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

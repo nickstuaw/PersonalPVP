@@ -95,4 +95,6 @@ public class GeneralConfig implements SettingsHolder {
             newListProperty(PFX_CMD_SETTINGS + PFX_PVP_CONTROL + "lines", List.of(
                     "<green>[<click:suggest_command:/pvp ontrol resetglobal><hover:show_text:'<aqua>Reset offline players as well as online players.'><gradient:green:aqua><bold>FULL</gradient> <gradient:aqua:green>RESET</gradient></bold></hover></click><green>]"));
 
+    public static final Property<Boolean> ENABLE_PVP_ALERT =
+            newProperty("notifications.enable-pvp-alert", true);
 }

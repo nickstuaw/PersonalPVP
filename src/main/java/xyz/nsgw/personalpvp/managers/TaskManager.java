@@ -4,6 +4,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import xyz.nsgw.personalpvp.PPVPPlugin;
 import xyz.nsgw.personalpvp.Utils;
+import xyz.nsgw.personalpvp.config.ConfigHandler;
 import xyz.nsgw.personalpvp.config.GeneralConfig;
 
 import java.util.ArrayList;
@@ -79,14 +80,14 @@ public class TaskManager {
                 false, true);
     }
     public static void sendInstantUpdate(final UUID u, final String msg) {
-        Utils.sendText(Bukkit.getPlayer(u), MiniMessage.get().parse(msg,"pvpprefix",
-                PVPManager.pvpPositive(u) ?
-                        PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED_PFX) :
-                        PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED_PFX),
-                "pvpstatus", PVPManager.pvpPositive(u) ?
-                        PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED) :
-                        PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED),
-                "worldtime", (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + suffix));
+        Utils.sendText(Bukkit.getPlayer(u), MiniMessage.get().parse(msg, "pvpprefix",
+                    PVPManager.pvpPositive(u) ?
+                            PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED_PFX) :
+                            PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED_PFX),
+                    "pvpstatus", PVPManager.pvpPositive(u) ?
+                            PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED) :
+                            PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED),
+                    "worldtime", (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + suffix));
     }
 
     public static boolean toggleHidden(final UUID uuid) {
@@ -103,17 +104,12 @@ public class TaskManager {
     }
 
     public static void blockedAttack(final UUID... us) {
-        if(PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_ATTACK_VISIBILITY_DURATION)<1) return;
+        if(!PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ENABLE_PVP_ALERT)) return;
         PPVPPlugin pl = PPVPPlugin.inst();
         for(UUID u : us) {
             if (ignoredPositive(u) && !PVPManager.isPvpEnabled(u)) {
-                for (int i = 0;
-                     i < PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_ATTACK_VISIBILITY_DURATION)+1;
-                     i++) {
-                    pl.getServer().getScheduler().scheduleSyncDelayedTask(pl, () ->
-                            TaskManager.sendInstantUpdate(u, "<#ed4213>Use <red><bold>/pvp<#ed4213> to " +
-                                    "enable pvp."), i * 20L);
-                }
+                TaskManager.sendInstantUpdate(u, "<#ed4213>Use <red><bold>/pvp<#ed4213> to " +
+                                    "enable pvp.");
             }
         }
     }

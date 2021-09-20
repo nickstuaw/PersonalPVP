@@ -46,11 +46,11 @@ class PVPCommand extends BaseCommand {
 
     @Default
     public void onPvp(Player p) {
-        if(Utils.togglePersonal(p)) notifyConsole(p.getName(), PVPManager.isPvpEnabled(p.getUniqueId()));
+        if(Utils.togglePersonal(p)) notifyConsole( PVPManager.isPvpEnabled(p.getUniqueId()), p);
     }
 
-    private void notifyConsole(final String tName, final boolean setTo) {
-        if(PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPTOGGLE_LOG_EVENTS_TO_CONSOLE)) Utils.send(Utils.parse(PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPTOGGLELOG_CONSOLE_FORMAT),"name",tName,"pvpstatus", setTo?PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPTOGGLELOG_CONSOLE__PVP_ENABLED_PFX):PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPTOGGLELOG_CONSOLE__PVP_DISABLED_PFX)));
+    private void notifyConsole(final boolean setTo, Player p) {
+        if(PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPTOGGLE_LOG_EVENTS_TO_CONSOLE)) Utils.send(Utils.parse(p,PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPTOGGLELOG_CONSOLE_FORMAT),"name",p.getName(),"pvpstatus", setTo?PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPTOGGLELOG_CONSOLE__PVP_ENABLED_PFX):PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPTOGGLELOG_CONSOLE__PVP_DISABLED_PFX)));
     }
 
     @Subcommand("control")
@@ -59,7 +59,9 @@ class PVPCommand extends BaseCommand {
 
         @Default
         public void onControl(final CommandSender s) {
-            Utils.send(s, Utils.parse(this.title+"\n" + PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPCTRL_PERSONAL_LINES) +(s.hasPermission("personalpvp.control.admin")?"\n<green><underlined>Admin</underlined>\n"+PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPCTRL_LINES)+"\n":"\n")+this.title), true, false);
+            if(s instanceof Player) {
+                Utils.send(s, Utils.parse((Player) s, this.title + "\n" + PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPCTRL_PERSONAL_LINES) + (s.hasPermission("personalpvp.control.admin") ? "\n<green><underlined>Admin</underlined>\n" + PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.CMD_PVPCTRL_LINES) + "\n" : "\n") + this.title), true, false);
+            }
         }
 
         @Subcommand("resetglobal")
