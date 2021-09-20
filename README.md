@@ -1,4 +1,5 @@
 # PersonalPVP
+![version](https://img.shields.io/badge/version-1.4.3-success)
 
 A Minecraft plugin that provides a PVP option for each player. PersonalPVP provides a many useful options for this
 that can be viewed in [config.yml](/src/main/resources/config.yml).
