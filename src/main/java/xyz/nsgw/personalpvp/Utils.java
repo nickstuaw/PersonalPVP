@@ -41,8 +41,8 @@ public class Utils {
         if (text) {
             sender.sendMessage(component);
         }
-        if (actionbar) {
-            sender.sendActionBar(component);
+        if (actionbar && sender instanceof Player) {
+            ((Player)sender).sendActionBar(component);
         }
     }
     public static void sendText(final Player player, final Component component) {
