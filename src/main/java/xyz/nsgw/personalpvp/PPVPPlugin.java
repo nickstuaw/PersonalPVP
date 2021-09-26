@@ -74,6 +74,7 @@ public final class PPVPPlugin extends JavaPlugin {
         checkActionbar();
 
         this.log.info("Default PvP setting: "+(PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.DEFAULT_PVP_STATUS)?"TRUE":"FALSE"));
+        this.log.info("If you are using spigot (not paper) or get actionbar errors, please disable the actionbar in config.yml by changing toggleable-actionbar.enable to false.");
         this.log.info("Personal PvP ENABLED.");
     }
 

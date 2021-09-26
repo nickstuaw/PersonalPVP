@@ -2,8 +2,8 @@ name: PersonalPVP
 version: ${project.version}
 main: xyz.nsgw.personalpvp.PPVPPlugin
 api-version: 1.17
-authors: [ CosmicSilence ]
-website: https://github.com/Nebula-O
+authors: [ nsgw ]
+website: https://github.com/nsgwick
 softdepend: [PlaceholderAPI]
 permissions:
   personalpvp.player:

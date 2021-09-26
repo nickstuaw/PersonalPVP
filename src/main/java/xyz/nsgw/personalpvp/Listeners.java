@@ -70,7 +70,7 @@ class QuitListener implements Listener {
     }
 }
 class DeathListener implements Listener {
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onDeath(final PlayerDeathEvent e) {
         if(e.getEntity().getKiller() == null) return;
         e.getDrops().clear();
@@ -80,7 +80,7 @@ class DeathListener implements Listener {
 }
 class DamageByEntityListener implements Listener {
     public DamageByEntityListener() {}
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onDamage(@NotNull EntityDamageByEntityEvent e) {
         Entity defender = e.getEntity(), attacker = e.getDamager();
         if(shouldTameablesCancel(attacker, defender)) {
@@ -176,7 +176,7 @@ class PotionListener implements Listener {
     }*/
 }
 class ProjectileListener implements Listener {
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onHit(final ProjectileHitEvent e){
         Projectile projectile = e.getEntity();
         if(e.getHitEntity()==null ||
@@ -206,7 +206,7 @@ class ProjectileListener implements Listener {
     }
 }
 class FishingListener implements Listener {
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onFish(@NotNull PlayerFishEvent e) {
         if(!(e.getCaught() instanceof Player)) return;
         UUID caughtUuid = e.getCaught().getUniqueId(), playerUuid = e.getPlayer().getUniqueId();
@@ -217,7 +217,7 @@ class FishingListener implements Listener {
     }
 }
 class CombustionListener implements Listener {
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onCombust(final EntityCombustByEntityEvent e) {
         if(!(e.getCombuster() instanceof Player) ||
                 !(e.getEntity() instanceof Player)) return;

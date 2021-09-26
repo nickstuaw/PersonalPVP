@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>xyz.nsgw</groupId>
+    <groupId>xyz.nsgw.personalpvp</groupId>
     <artifactId>PersonalPVP</artifactId>
-    <version>1.4.4</version>
+    <version>1.4.5</version>
     <packaging>jar</packaging>
 
     <name>PersonalPVP</name>
@@ -42,15 +42,15 @@
                         <relocations>
                             <relocation>
                                 <pattern>co.aikar.commands</pattern>
-                                <shadedPattern>xyz.nsgw.nsys.libs.acf</shadedPattern> <!-- Replace this -->
+                                <shadedPattern>xyz.nsgw.personalpvp.libs.acf</shadedPattern> <!-- Replace this -->
                             </relocation>
                             <relocation>
                                 <pattern>co.aikar.locales</pattern>
-                                <shadedPattern>xyz.nsgw.nsys.libs.locales</shadedPattern> <!-- Replace this -->
+                                <shadedPattern>xyz.nsgw.personalpvp.libs.locales</shadedPattern> <!-- Replace this -->
                             </relocation>
                             <relocation>
                                 <pattern>net.kyori</pattern>
-                                <shadedPattern>xyz.nsgw.nsys.libs.kyori</shadedPattern> <!-- Replace this -->
+                                <shadedPattern>xyz.nsgw.personalpvp.libs.kyori</shadedPattern> <!-- Replace this -->
                             </relocation>
                         </relocations>
                     </configuration>
@@ -119,7 +119,7 @@
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-api</artifactId>
-            <version>4.9.0</version>
+            <version>4.9.1</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
