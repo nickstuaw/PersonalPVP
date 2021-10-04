@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2021.
+ */
+
 package xyz.nsgw.personalpvp;
 
 import org.bukkit.Bukkit;
@@ -13,7 +17,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +24,6 @@ import xyz.nsgw.personalpvp.config.GeneralConfig;
 import xyz.nsgw.personalpvp.managers.PVPManager;
 import xyz.nsgw.personalpvp.managers.TaskManager;
 
-import java.awt.geom.Area;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;

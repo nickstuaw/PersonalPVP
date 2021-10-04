@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2021.
+ */
+
 package xyz.nsgw.personalpvp;
 
 import me.clip.placeholderapi.PlaceholderAPI;

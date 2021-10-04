@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2021.
+ */
+
 package xyz.nsgw.personalpvp.config;
 
 import ch.jalu.configme.SettingsManager;

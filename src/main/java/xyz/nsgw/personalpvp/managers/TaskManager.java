@@ -1,10 +1,13 @@
+/*
+ * Copyright (c) 2021.
+ */
+
 package xyz.nsgw.personalpvp.managers;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import xyz.nsgw.personalpvp.PPVPPlugin;
 import xyz.nsgw.personalpvp.Utils;
-import xyz.nsgw.personalpvp.config.ConfigHandler;
 import xyz.nsgw.personalpvp.config.GeneralConfig;
 
 import java.util.ArrayList;

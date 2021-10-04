@@ -1,13 +1,5 @@
 /*
- *
- * Copyright © Nicholas Williams 2021
- *      Permission to store, use, copy, and distribute this source code and/or software may be
- *      taken as given on condition that the authorship of this source code is acknowledged as
- *      Nicholas Williams.
- * DISCLAIMER:
- *      The author assumes no responsibility or liability for any
- *      consequential damages from the use of this source code.
- *
+ * Copyright (c) 2021.
  */
 
 package xyz.nsgw.personalpvp;

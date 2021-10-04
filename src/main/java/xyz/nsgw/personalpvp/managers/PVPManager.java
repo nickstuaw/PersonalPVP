@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2021.
+ */
+
 package xyz.nsgw.personalpvp.managers;
 
 import org.bukkit.entity.Player;
