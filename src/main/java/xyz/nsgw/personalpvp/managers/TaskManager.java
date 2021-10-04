@@ -69,27 +69,29 @@ public class TaskManager {
     }
 
     public static void sendInstantUpdate(final UUID u) {
+        PPVPPlugin pl = PPVPPlugin.inst();
         Utils.send(Bukkit.getPlayer(u),
                 Utils.parse(PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_MESSAGE),
                 "pvpprefix",
-                PVPManager.pvpPositive(u) ?
-                        PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED_PFX) :
-                        PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED_PFX),
+                        pl.pvp().pvpPositive(u) ?
+                                pl.conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED_PFX) :
+                                pl.conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED_PFX),
                 "pvpstatus",
-                PVPManager.pvpPositive(u) ?
-                        PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED) :
-                        PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED),
+                        pl.pvp().pvpPositive(u) ?
+                                pl.conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED) :
+                                pl.conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED),
                 "worldtime", (hours<10?"0":"")+hours+":"+(minutes<10?"0":"")+minutes+suffix),
                 false, true);
     }
     public static void sendInstantUpdate(final UUID u, final String msg) {
+        PPVPPlugin pl = PPVPPlugin.inst();
         Utils.sendText(Bukkit.getPlayer(u), MiniMessage.get().parse(msg, "pvpprefix",
-                    PVPManager.pvpPositive(u) ?
-                            PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED_PFX) :
-                            PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED_PFX),
-                    "pvpstatus", PVPManager.pvpPositive(u) ?
-                            PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED) :
-                            PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED),
+                pl.pvp().pvpPositive(u) ?
+                        pl.conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED_PFX) :
+                        pl.conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED_PFX),
+                    "pvpstatus", pl.pvp().pvpPositive(u) ?
+                        pl.conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED) :
+                        pl.conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED),
                     "worldtime", (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + suffix));
     }
 
@@ -110,7 +112,7 @@ public class TaskManager {
         if(!PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.ENABLE_PVP_ALERT)) return;
         PPVPPlugin pl = PPVPPlugin.inst();
         for(UUID u : us) {
-            if (ignoredPositive(u) && !PVPManager.isPvpEnabled(u)) {
+            if (ignoredPositive(u) && !pl.pvp().isPvpEnabled(u)) {
                 TaskManager.sendInstantUpdate(u, "<#ed4213>Use <red><bold>/pvp<#ed4213> to " +
                                     "enable pvp.");
             }

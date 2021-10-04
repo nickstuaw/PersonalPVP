@@ -10,7 +10,7 @@
 
     <groupId>xyz.nsgw.personalpvp</groupId>
     <artifactId>PersonalPVP</artifactId>
-    <version>1.4.5</version>
+    <version>1.5.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>PersonalPVP</name>

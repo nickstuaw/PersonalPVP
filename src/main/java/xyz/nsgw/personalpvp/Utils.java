@@ -12,7 +12,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import xyz.nsgw.personalpvp.config.GeneralConfig;
-import xyz.nsgw.personalpvp.managers.PVPManager;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -101,18 +100,18 @@ public class Utils {
 
     public static boolean togglePersonal(final Player p) {
         if(pl.conf().get().getProperty(GeneralConfig.IS_STATUS_LOCKING)) {
-            if (PVPManager.isLocked(p.getUniqueId())) {
+            if (pl.pvp().isLocked(p.getUniqueId())) {
                 Utils.sendText(p,Utils.parse("Oops! Your PVP status has been locked."));
                 return false;
             }
         }
-        if(PVPManager.coolingDown(p)) {
-            int remaining = PVPManager.getRemainingSeconds(p.getUniqueId());
+        if(pl.pvp().coolingDown(p)) {
+            int remaining = pl.pvp().getRemainingSeconds(p.getUniqueId());
             Utils.sendText(p, Utils.parse("<red>You can do that again in <yellow><bold><seconds></bold></yellow>.","seconds",remaining+(remaining>1?" seconds":" second")));
             return false;
         }
-        PVPManager.coolDown(p);
-        Utils.sendText(p, PVPManager.toggle(p.getUniqueId()) ? MiniMessage.get().parse("<aqua>PVP enabled.") : MiniMessage.get().parse("<green>PVP disabled."));
+        pl.pvp().coolDown(p);
+        Utils.sendText(p, pl.pvp().toggle(p.getUniqueId()) ? MiniMessage.get().parse("<aqua>PVP enabled.") : MiniMessage.get().parse("<green>PVP disabled."));
         return true;
     }
 }
