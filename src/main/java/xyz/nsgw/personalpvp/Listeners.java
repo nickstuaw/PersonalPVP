@@ -74,8 +74,9 @@ class DeathListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onDeath(final PlayerDeathEvent e) {
         if(e.getEntity().getKiller() == null) return;
+        if(!PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.KEEPINV_ON_PVP_DEATH)) return;
         e.getDrops().clear();
-        e.setKeepInventory(PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.KEEPINV_ON_PVP_DEATH));
+        e.setKeepInventory(true);
         e.setKeepLevel(PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.KEEPXP_ON_PVP_DEATH));
     }
 }
