@@ -20,6 +20,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.jetbrains.annotations.NotNull;
+import xyz.nsgw.personalpvp.Utils.Tameables;
 import xyz.nsgw.personalpvp.config.GeneralConfig;
 import xyz.nsgw.personalpvp.managers.TaskManager;
 
@@ -74,10 +75,10 @@ class DeathListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onDeath(final PlayerDeathEvent e) {
         if(e.getEntity().getKiller() == null) return;
+        e.setKeepLevel(PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.KEEPXP_ON_PVP_DEATH));
         if(!PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.KEEPINV_ON_PVP_DEATH)) return;
         e.getDrops().clear();
         e.setKeepInventory(true);
-        e.setKeepLevel(PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.KEEPXP_ON_PVP_DEATH));
     }
 }
 class DamageByEntityListener implements Listener {
@@ -85,7 +86,7 @@ class DamageByEntityListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onDamage(@NotNull EntityDamageByEntityEvent e) {
         Entity defender = e.getEntity(), attacker = e.getDamager();
-        if(shouldTameablesCancel(attacker, defender)) {
+        if(Tameables.shouldTameablesCancel(attacker, defender)) {
             e.setCancelled(true);
             return;
         }
@@ -102,34 +103,6 @@ class DamageByEntityListener implements Listener {
             e.setCancelled(true);
             TaskManager.blockedAttack(entityUuid,damagerUuid);
         }
-    }
-    private boolean shouldTameablesCancel(final Entity attacker, final Entity defender) {
-        if(!PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.PREVENT_TAMEDDAMAGE)) return false;
-        if(!(attacker instanceof Tameable || defender instanceof Tameable)) return false;
-        Tameable animal;
-        if(attacker instanceof Tameable) {
-            animal = (Tameable) attacker;
-            if(animal.getOwner() == null || !(animal.getOwner() instanceof Player)) return false;
-            if(PPVPPlugin.inst().pvp().isPvpDisabled(animal.getOwner().getUniqueId())) return true;
-            if(defender instanceof Player) {
-                if(PPVPPlugin.inst().pvp().isPvpDisabled(defender.getUniqueId())) return true;
-            }
-        }
-        if(defender instanceof Tameable) {
-            animal = (Tameable) defender;
-            if(animal.getOwner()==null) return false;
-            if(!(animal.getOwner() instanceof Player)) return false;
-            if(attacker instanceof Player) {
-                if(animal.getOwner().equals(attacker)) return false;
-            }
-            return checkOwners((Tameable) defender);
-        }
-        return false;
-    }
-    private boolean checkOwners(Tameable animal) {
-        if(animal.getOwner() == null || !(animal.getOwner() instanceof Player)) return false;
-        if(PPVPPlugin.inst().pvp().isPvpDisabled(animal.getOwner().getUniqueId())) return true;
-        return false;
     }
 }
 class PotionListener implements Listener {
