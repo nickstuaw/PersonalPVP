@@ -52,17 +52,13 @@ public class GeneralConfig implements SettingsHolder {
     public static final Property<Boolean> ABAR_RESET_ON_Q =
             newProperty(PFX_ACTIONBAR + "reset-actionbar-status-on-quit", true);
     public static final Property<String> ABAR_MESSAGE =
-            newProperty(PFX_ACTIONBAR + "message", "<pvpprefix>PVP: <pvpstatus></gradient> <gray>-</gray> <gold><worldtime>");
+            newProperty(PFX_ACTIONBAR + "message", "<pvpprefix> <gray>-</gray> <gold><worldtime>");
     public static final Property<String>  ABAR_TIME_WORLD =
             newProperty(PFX_ACTIONBAR + "worldtime-in-world", "world");
-    public static final Property<String>  ABAR_PVP_ENABLED =
-            newProperty(PFX_ACTIONBAR + "pvpstatus-enabled", "<aqua>Enabled");
-    public static final Property<String>  ABAR_PVP_DISABLED =
-            newProperty(PFX_ACTIONBAR + "pvpstatus-disabled", "<green>Disabled");
     public static final Property<String> ABAR_PVP_ENABLED_PFX =
-            newProperty(PFX_ACTIONBAR + "pvp-enabled-color-prefix","<gradient:#b82a11:#d41c43>");
+            newProperty(PFX_ACTIONBAR + "pvp-enabled-color-prefix","<gradient:#b82a11:#d41c43>PVP: <aqua>Enabled</aqua></gradient>");
     public static final Property<String> ABAR_PVP_DISABLED_PFX =
-            newProperty(PFX_ACTIONBAR + "pvp-disabled-color-prefix","<gradient:#d41c43:#b82a11>");
+            newProperty(PFX_ACTIONBAR + "pvp-disabled-color-prefix","<gradient:#d41c43:#b82a11>PVP: <green>Disabled</green></gradient>");
 
     public static final Property<Integer> CMD_PVPTOGGLE_COOLDOWN =
             newProperty(PFX_CMD_SETTINGS + PFX_PVP_TOGGLE + "cooldown", 3);
@@ -97,7 +93,7 @@ public class GeneralConfig implements SettingsHolder {
             ));
     public static final Property<List<String>> CMD_PVPCTRL_LINES =
             newListProperty(PFX_CMD_SETTINGS + PFX_PVP_CONTROL + "lines", List.of(
-                    "<green>[<click:suggest_command:/pvp ontrol resetglobal><hover:show_text:'<aqua>Reset offline players as well as online players.'><gradient:green:aqua><bold>FULL</gradient> <gradient:aqua:green>RESET</gradient></bold></hover></click><green>]"));
+                    "<green>[<click:suggest_command:/pvp control resetglobal><hover:show_text:'<aqua>Reset offline players as well as online players.'><gradient:green:aqua><bold>FULL</bold></gradient> <gradient:aqua:green><bold>RESET</bold></gradient></hover></click><green>]"));
 
     public static final Property<Boolean> ENABLE_PVP_ALERT =
             newProperty("notifications.enable-pvp-alert", true);

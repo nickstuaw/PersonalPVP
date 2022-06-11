@@ -7,12 +7,15 @@ package xyz.nsgw.personalpvp;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 import xyz.nsgw.personalpvp.config.GeneralConfig;
 
 import java.io.*;
@@ -36,6 +39,7 @@ public class Utils {
 
     private static PPVPPlugin pl;
 
+    private static MiniMessage mm = MiniMessage.miniMessage();
     private static List<List<UUID>> loaded = new ArrayList<>(Arrays.asList(new ArrayList<>(),new ArrayList<>(),new ArrayList<>()));
 
     public static void setPlugin(final PPVPPlugin plugin) {
@@ -47,7 +51,7 @@ public class Utils {
             sender.sendMessage(component);
         }
         if (actionbar && sender instanceof Player) {
-            ((Player)sender).sendActionBar(component);
+            sender.sendActionBar(component);
         }
     }
     public static void sendText(final Player player, final Component component) {
@@ -62,11 +66,20 @@ public class Utils {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             PlaceholderAPI.setPlaceholders(p, text);
         }
-        return MiniMessage.get().parse(text, placeholders);
+        return getComponent(text, placeholders);
+    }
+
+    @NotNull
+    public static Component getComponent(String text, String... placeholders) {
+        TagResolver.Builder builder = TagResolver.builder();
+        for(int i = 0; i < placeholders.length; i += 2) {
+            builder.tag(placeholders[i], Tag.inserting(mm.deserialize(placeholders[i + 1])));
+        }
+        return mm.deserialize(text, builder.build());
     }
 
     public static Component parse(String text, final String... placeholders) {
-        return MiniMessage.get().parse(text, placeholders);
+        return getComponent(text, placeholders);
     }
 
     public static void loadObjects() throws IOException, ClassNotFoundException {
@@ -113,7 +126,7 @@ public class Utils {
             return false;
         }
         pl.pvp().coolDown(p);
-        Utils.sendText(p, pl.pvp().toggle(p.getUniqueId()) ? MiniMessage.get().parse("<aqua>PVP enabled.") : MiniMessage.get().parse("<green>PVP disabled."));
+        Utils.sendText(p, pl.pvp().toggle(p.getUniqueId()) ? mm.deserialize("<aqua>PVP enabled.") : mm.deserialize("<green>PVP disabled."));
         return true;
     }
     public static class Tameables {

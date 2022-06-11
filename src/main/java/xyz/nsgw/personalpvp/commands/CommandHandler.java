@@ -88,7 +88,11 @@ class PVPCommand extends BaseCommand {
         @Subcommand("resetglobal")
         @CommandPermission("personalpvp.pvpcontrol.resetglobal")
         public void onGlobalReset(final CommandSender s) {
-            PPVPPlugin.inst().pvp().players().forEach(PPVPPlugin.inst().pvp()::remove);
+            List<UUID> uuids = PPVPPlugin.inst().pvp().players();
+            int size = uuids.size();
+            for(int i = 0; i < size; i++) {
+                PPVPPlugin.inst().pvp().remove(uuids.get(i));
+            }
             Utils.send(s, Utils.parse(
                     "<yellow>You <hover:show_text:'"
                     + (PPVPPlugin.inst().conf().get().getProperty(GeneralConfig.DEFAULT_PVP_STATUS) ?
@@ -156,7 +160,7 @@ class PVPCommand extends BaseCommand {
         @CommandPermission("personalpvp.pvpcontrol.other.status")
         public void onStatus(final CommandSender s, final OnlinePlayer t) {
             Player target = t.getPlayer();
-            Utils.send(s, Utils.parse("<yellow>"+target.getDisplayName()+" has PVP "
+            Utils.send(s, Utils.parse("<yellow>"+target.getName()+" has PVP "
                     + (PPVPPlugin.inst().pvp().pvpPositive(target.getUniqueId()) ?
                     "<aqua>ENABLED." : "<green>DISABLED.")), true, false);
         }

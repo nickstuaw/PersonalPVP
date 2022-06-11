@@ -76,22 +76,15 @@ public class TaskManager {
                         pl.pvp().pvpPositive(u) ?
                                 pl.conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED_PFX) :
                                 pl.conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED_PFX),
-                "pvpstatus",
-                        pl.pvp().pvpPositive(u) ?
-                                pl.conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED) :
-                                pl.conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED),
                 "worldtime", (hours<10?"0":"")+hours+":"+(minutes<10?"0":"")+minutes+suffix),
                 false, true);
     }
     public static void sendInstantUpdate(final UUID u, final String msg) {
         PPVPPlugin pl = PPVPPlugin.inst();
-        Utils.sendText(Bukkit.getPlayer(u), MiniMessage.get().parse(msg, "pvpprefix",
+        Utils.sendText(Bukkit.getPlayer(u), Utils.parse(msg, "pvpprefix",
                 pl.pvp().pvpPositive(u) ?
                         pl.conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED_PFX) :
                         pl.conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED_PFX),
-                    "pvpstatus", pl.pvp().pvpPositive(u) ?
-                        pl.conf().get().getProperty(GeneralConfig.ABAR_PVP_ENABLED) :
-                        pl.conf().get().getProperty(GeneralConfig.ABAR_PVP_DISABLED),
                     "worldtime", (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + suffix));
     }
 

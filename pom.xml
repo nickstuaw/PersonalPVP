@@ -10,7 +10,7 @@
 
     <groupId>xyz.nsgw.personalpvp</groupId>
     <artifactId>PersonalPVP</artifactId>
-    <version>1.5.0-SNAPSHOT-1</version>
+    <version>1.5.0</version>
     <packaging>jar</packaging>
 
     <name>PersonalPVP</name>
@@ -89,9 +89,9 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
-        <repository> <!-- for development builds -->
-            <id>sonatype-oss</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        <repository>
+            <id>sonatype-oss-snapshots1</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
         <repository>
             <id>aikar</id>
@@ -124,7 +124,7 @@
         <dependency>
             <groupId>co.aikar</groupId>
             <artifactId>acf-paper</artifactId>
-            <version>0.5.0-SNAPSHOT</version>
+            <version>0.5.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
@@ -133,8 +133,18 @@
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
+            <artifactId>adventure-api</artifactId>
+            <version>4.11.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-platform-bukkit</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
-            <version>4.1.0-SNAPSHOT</version>
+            <version>4.11.0</version>
         </dependency>
         <dependency>
             <groupId>ch.jalu</groupId>
