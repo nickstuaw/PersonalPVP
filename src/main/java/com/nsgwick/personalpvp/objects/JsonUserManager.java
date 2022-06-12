@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2021.
+ * Copyright (c) 2022.
  */
 
-package xyz.nsgw.personalpvp.objects;
+package com.nsgwick.personalpvp.objects;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -10,7 +10,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
 import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
-import xyz.nsgw.personalpvp.PPVPPlugin;
+import com.nsgwick.personalpvp.PPVPPlugin;
 
 import java.io.*;
 import java.util.HashMap;
@@ -18,6 +18,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * WORK-IN-PROGRESS
+ */
 public class JsonUserManager implements UserManager {
 
     private final LoadingCache<@NotNull UUID, @NotNull PvpUser> userCache;

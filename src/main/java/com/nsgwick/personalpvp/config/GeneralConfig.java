@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2021.
+ * Copyright (c) 2022.
  */
 
-package xyz.nsgw.personalpvp.config;
+package com.nsgwick.personalpvp.config;
 
 import ch.jalu.configme.Comment;
 import ch.jalu.configme.SettingsHolder;
@@ -16,6 +16,9 @@ import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
 public class GeneralConfig implements SettingsHolder {
 
+    /*
+    Config.yml settings.
+     */
     private static final String PFX_STORAGE = "storage.";
     private static final String PFX_PREVENT = "prevent.";
     private static final String PFX_ACTIONBAR = "toggleable-actionbar.";
@@ -49,6 +52,7 @@ public class GeneralConfig implements SettingsHolder {
             newProperty(PFX_ACTIONBAR + "duration-of-visibility-on-login", 5);
     public static final Property<Integer> ABAR_ATTACK_VISIBILITY_DURATION =
             newProperty(PFX_ACTIONBAR + "duration-of-visibility-on-attack", 5);
+    @Comment("Enabling this will wipe current actionbar statuses so make a backup of your data file first!")
     public static final Property<Boolean> ABAR_RESET_ON_Q =
             newProperty(PFX_ACTIONBAR + "reset-actionbar-status-on-quit", true);
     public static final Property<String> ABAR_MESSAGE =
@@ -64,6 +68,7 @@ public class GeneralConfig implements SettingsHolder {
             newProperty(PFX_CMD_SETTINGS + PFX_PVP_TOGGLE + "cooldown", 3);
     public static final Property<Boolean> DEFAULT_PVP_STATUS =
             newProperty(PFX_CMD_SETTINGS + PFX_PVP_TOGGLE + "default-pvp-status-on-first-join", false);
+    @Comment("Enabling this will wipe current PVP statuses so make a backup of your data file first!")
     public static final Property<Boolean> RESET_PVP_ON_QUIT =
             newProperty(PFX_CMD_SETTINGS + PFX_PVP_TOGGLE + "reset-pvp-status-on-quit", false);
     public static final Property<Boolean> IS_STATUS_LOCKING =
@@ -87,13 +92,13 @@ public class GeneralConfig implements SettingsHolder {
 
     public static final Property<List<String>> CMD_PVPCTRL_PERSONAL_LINES =
             newListProperty(PFX_CMD_SETTINGS + PFX_PVP_CONTROL + "personal-lines", Arrays.asList(
-                    "<green>[<click:run_command:/pvp control toggleme><gradient:gray:white><bold>TOGGLE PVP</bold></gradient></click><green>]",
+                    "<green><click:run_command:/pvp control toggleme><gradient:gray:white><bold>TOGGLE PVP</bold></gradient></click><green>]",
                     "<green>[<click:run_command:/pvp control mystatus><gradient:white:gray><bold>GET PVP STATUS</bold></gradient></click><green>]",
-                    "<green>[<click:run_command:/pvp togglebar><gradient:gray:white><bold>TOGGLE ACTIONBAR VISIBILITY</bold></gradient></click><green>]"
+                    "<green>[<click:run_command:/pvp togglebar><gradient:gray:white><bold>TOGGLE ACTIONBAR VISIBILITY</bold></gradient></click><green>"
             ));
     public static final Property<List<String>> CMD_PVPCTRL_LINES =
             newListProperty(PFX_CMD_SETTINGS + PFX_PVP_CONTROL + "lines", List.of(
-                    "<green>[<click:suggest_command:/pvp control resetglobal><hover:show_text:'<aqua>Reset offline players as well as online players.'><gradient:green:aqua><bold>FULL</bold></gradient> <gradient:aqua:green><bold>RESET</bold></gradient></hover></click><green>]"));
+                    "<green><click:suggest_command:/pvp control resetglobal><hover:show_text:'<aqua>Reset offline players as well as online players.'><gradient:green:aqua><bold>FULL</bold></gradient> <gradient:aqua:green><bold>RESET</bold></gradient></hover></click><green>"));
 
     public static final Property<Boolean> ENABLE_PVP_ALERT =
             newProperty("notifications.enable-pvp-alert", true);
