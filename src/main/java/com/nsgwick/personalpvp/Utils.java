@@ -380,6 +380,10 @@ public class Utils {
                     If the defending animal is the attacker's pet, don't cancel.
                      */
                     if (animal.getOwner().equals(attacker)) return false;
+                    /*
+                    If the attacker has PVP disabled, cancel.
+                     */
+                    if (PPVPPlugin.inst().pvp().pvpNegative(attacker.getUniqueId())) return true;
                 }
                 return checkOwner((Tameable) defender);
             }
