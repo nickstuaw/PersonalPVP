@@ -23,9 +23,7 @@ import org.bukkit.projectiles.ProjectileSource;
 import org.jetbrains.annotations.NotNull;
 import com.nsgwick.personalpvp.config.GeneralConfig;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -299,15 +297,12 @@ class PotionListener implements Listener {
         if(e.getPotion().getEffects().stream().map(PotionEffect::getType)
                 .noneMatch(Arrays.asList(Utils.BAD_EFFECTS)::contains)) return;
         /*
-        Save a filtered stream of uuids of the players affected.
-         */
-        Stream<UUID> stream = e.getAffectedEntities().stream()
-                .filter(livingEntity -> livingEntity instanceof Player).map(LivingEntity::getUniqueId);
-        /*
-        If the shooter has pvp disabled or none of the affected entities have it enabled,
+        If the shooter has pvp disabled or any of the affected entities have it disabled,
          */
         if(PPVPPlugin.inst().pvp().pvpNegative((((Player) shooter).getUniqueId()))
-                || stream.noneMatch(PPVPPlugin.inst().pvp()::pvpPositive)) {
+                || e.getAffectedEntities().stream()
+                .filter(livingEntity -> livingEntity instanceof Player).map(LivingEntity::getUniqueId)
+                .anyMatch(PPVPPlugin.inst().pvp()::pvpNegative)) {
             /*
             cancel the potion splash event.
              */
@@ -319,8 +314,25 @@ class PotionListener implements Listener {
             /*
             Send a pvp alert if necessary.
              */
-            TaskManager.blockedAttack(stream.toArray(UUID[]::new));
+            TaskManager.blockedAttack(e.getAffectedEntities().stream()
+                    .filter(livingEntity -> livingEntity instanceof Player).map(LivingEntity::getUniqueId)
+                    .toArray(UUID[]::new));
         }
+        /*
+        Create an empty list.
+         */
+        List<UUID> affectedUuids = new ArrayList<>();
+        /*
+        List the uuids of players with pvp disabled affected by the potion.
+         */
+        e.getAffectedEntities().stream()
+                .filter(livingEntity -> livingEntity instanceof Player).map(LivingEntity::getUniqueId)
+                .filter(PPVPPlugin.inst().pvp()::pvpNegative)
+                .forEach(affectedUuids::add);
+        for(UUID uuid : affectedUuids) {
+            e.getAffectedEntities().remove(Bukkit.getPlayer(uuid));
+        }
+
     }
     /*
     Old code which hasn't been tested properly.
