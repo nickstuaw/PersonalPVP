@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2021.
+ * Copyright (c) 2022.
  */
 
-package xyz.nsgw.personalpvp.objects;
+package com.nsgwick.personalpvp.objects;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -1,6 +1,6 @@
 name: PersonalPVP
 version: ${project.version}
-main: xyz.nsgw.personalpvp.PPVPPlugin
+main: com.nsgwick.personalpvp.PPVPPlugin
 api-version: 1.17
 authors: [ nsgw ]
 website: https://github.com/nsgwick
